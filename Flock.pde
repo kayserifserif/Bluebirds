@@ -1,3 +1,5 @@
+// Flocking code from https://processing.org/examples/flocking.html
+
 class Flock {
   ArrayList<Tweet> tweets; // An ArrayList for all the tweets
 

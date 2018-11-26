@@ -22,6 +22,7 @@ void setup() {
   textFont(font);
 }
 
+// https://temboo.com/library/Library/Twitter/Search/Tweets/
 void runTweetsChoreo() {
   Tweets tweetsChoreo = new Tweets(session);
   tweetsChoreo.setCredential("climatechangedenial");

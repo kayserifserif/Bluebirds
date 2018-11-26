@@ -4,21 +4,23 @@ class Tweet {
   PVector velocity;
   PVector acceleration;
   float maxforce = 0.03;    // Maximum steering force
-  float maxspeed = 2.0;    // Maximum speed
+  float maxspeed_escape = 2.0;
+  float maxspeed_flock = 4.0;
+  float maxspeed = maxspeed_flock;
 
   String text;
   float w = 250.0;
   float h = 250.0;
-  float hover_padding = 100.0;
+  float hover_padding = 50.0;
   
   float weight_sep_escape = 10.0;
   float weight_sep_flock = 3.5;
   float weight_sep = weight_sep_flock;
-  float weight_ali_escape = 0.5;
+  float weight_ali_escape = 0.1;
   float weight_ali_flock = 2.0;
   float weight_ali = weight_ali_flock;
-  float weight_coh_escape = 0.5;
-  float weight_coh_flock = 2.0;
+  float weight_coh_escape = 0.1;
+  float weight_coh_flock = 2.5;
   float weight_coh = weight_coh_flock;
 
   Tweet(String text) {
@@ -178,13 +180,15 @@ class Tweet {
   void checkMouse() {
     if (mouseX > position.x - hover_padding && mouseX < position.x + w + hover_padding &&
       mouseY > position.y - hover_padding && mouseY < position.y + h + hover_padding) {
-      weight_sep = 10.0;
-      weight_ali = 0.5;
-      weight_coh = 0.5;
+      weight_sep = weight_sep_escape;
+      weight_ali = weight_ali_escape;
+      weight_coh = weight_coh_escape;
+      maxspeed = maxspeed_escape;
     } else {
-      weight_sep = 3.5;
-      weight_ali = 2.0;
-      weight_coh = 2.0;
+      weight_sep = weight_sep_flock;
+      weight_ali = weight_ali_flock;
+      weight_coh = weight_coh_flock;
+      maxspeed = maxspeed_flock;
     }
   }
 }
