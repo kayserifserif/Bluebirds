@@ -3,7 +3,7 @@ import com.temboo.Library.Twitter.Search.*;
 import java.util.*;
 
 TembooSession session = new TembooSession(
-  "katherine-yang", "myFirstApp", "MNksrwJYgcp5BZfIvYMo67TBkIFwVlPp");
+  "katherine-yang", "climatechangedenial", "MNksrwJYgcp5BZfIvYMo67TBkIFwVlPp");
 
 Tweet[] tweets;
 
@@ -12,7 +12,7 @@ PFont font;
 void setup() {
   size(1280, 720);
   runTweetsChoreo();
-  
+
   font = createFont("data/LibreFranklin-Regular.ttf", 12);
   textFont(font);
 }
@@ -20,6 +20,8 @@ void setup() {
 void runTweetsChoreo() {
   Tweets tweetsChoreo = new Tweets(session);
   tweetsChoreo.setCredential("climatechangedenial");
+  tweetsChoreo.setQuery("('climate change' OR 'global warming') (hoax OR conspiracy) -is:retweet");
+  tweetsChoreo.setCount("100");
   TweetsResultSet tweetsResults = tweetsChoreo.run();
   String results_str = tweetsResults.getResponse();
   JSONObject results = parseJSONObject(results_str);

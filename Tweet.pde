@@ -1,8 +1,8 @@
 class Tweet {
   String text;
   float x, y;
-  float w = 200.0;
-  float h = 200.0;
+  float w = 250.0;
+  float h = 250.0;
   float speed;
   
   Tweet(String text) {
