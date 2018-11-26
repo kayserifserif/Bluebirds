@@ -1,17 +1,22 @@
 import com.temboo.core.*;
 import com.temboo.Library.Twitter.Search.*;
-import java.util.*;
 
 TembooSession session = new TembooSession(
   "katherine-yang", "climatechangedenial", "MNksrwJYgcp5BZfIvYMo67TBkIFwVlPp");
 
 Tweet[] tweets;
 
+Flock flock;
+
 PFont font;
 
 void setup() {
   size(1280, 720);
   runTweetsChoreo();
+  flock = new Flock();
+  for (Tweet t : tweets) {
+    flock.addTweet(t);
+  }
 
   font = createFont("data/LibreFranklin-Regular.ttf", 12);
   textFont(font);
@@ -35,8 +40,5 @@ void runTweetsChoreo() {
 
 void draw() {
   background(255);
-  for (Tweet t : tweets) {
-    t.update();
-    t.display();
-  }
+  flock.run();
 }
