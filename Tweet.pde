@@ -5,57 +5,59 @@ class Tweet {
   PVector velocity;
   PVector acceleration;
   float maxforce = 0.03;    // Maximum steering force
-  float maxspeed_escape = 1.0;
+  float maxspeed_expand = 1.0;
   float maxspeed_flock = 3.0;
   float maxspeed = maxspeed_flock;
+  float expand_padding = 40.0;
+
+  // WEIGHTING
+  float weight_sep_expand = 10.0;
+  float weight_sep_flock = 1.5;
+  float weight_sep = weight_sep_flock;
+  float weight_ali_expand = 0.1;
+  float weight_ali_flock = 2.0;
+  float weight_ali = weight_ali_flock;
+  float weight_coh_expand = 0.1;
+  float weight_coh_flock = 2.5;
+  float weight_coh = weight_coh_flock;
 
   // ANALYSIS
   String[] top_words;
-  String split_pattern = "(?<=\\s+)|(?=\\s+)|\\s+|(?=\\p{Punct})|(?<=\\p{Punct})";
+  String pattern_split =
+    "(?<=\\s+)|(?=\\s+)" +  // lookbehind and lookahead whitespace
+    // from https://stackoverflow.com/questions/31273020/how-to-split-a-string-while-maintaining-whitespace
+    "|" +
+    "\\s+|(?=\\p{P})|(?<=\\p{P})";  // split punctuation
+  // from https://stackoverflow.com/questions/24222730/split-a-string-and-separate-by-punctuation-and-whitespace
+  String pattern_punc_white = "[\\p{P}|\\s]";  // match punctuation and whitespace
   String[] text_split;
   color c_normal = color(0, 0, 0);
-  color c_topic = color(200, 50, 50);
+  color c_top_word = color(0, 80, 80);
 
   // DISPLAY
   String text;
   float w = 250.0;
   float h = 250.0;
-  //float z_back = -100.0;
-  //float z_front = 100.0;
-  float expand_padding = 50.0;
   int font_size = 12;
   float leading = font_size*1.2;
 
   // FOCUS
   float focus_padding = 10.0;
   boolean is_focused = false;
-  float alpha_faded = 100.0;
-  float alpha_focused = 255.0;
+  float alpha_faded = 50.0;
+  float alpha_focused = 100.0;
 
-  // WEIGHTING
-  float weight_sep_escape = 10.0;
-  float weight_sep_flock = 1.5;
-  float weight_sep = weight_sep_flock;
-  float weight_ali_escape = 0.1;
-  float weight_ali_flock = 2.0;
-  float weight_ali = weight_ali_flock;
-  float weight_coh_escape = 0.1;
-  float weight_coh_flock = 2.5;
-  float weight_coh = weight_coh_flock;
+  // FEATURE
+  boolean clicked = false;
 
   Tweet(String text, String[] top_words) {
     this.text = text;
+    text_split = text.split(pattern_split);
     this.top_words = top_words;
-    //position = new PVector(random(width), random(height));
-    //position = new PVector(random(width), random(height), random(z_back, z_front));
-    position = new PVector(width/2, height/2);
-    //position = new PVector(width/2, height/2, 0);
-    acceleration = new PVector(0, 0);
-    //acceleration = new PVector(0, 0, 0);
-    velocity = PVector.random2D();
-    //velocity = PVector.random3D();
 
-    text_split = text.split(split_pattern);
+    position = new PVector(width/2, height/2);
+    acceleration = new PVector(0, 0);
+    velocity = PVector.random2D();
   }
 
   void run(ArrayList<Tweet> tweets) {
@@ -111,48 +113,50 @@ class Tweet {
   }
 
   void render() {
-    float x_current = position.x;
-    float y_current = position.y;
+    // set initial cursor to top left 
+    float cursor_x = position.x;
+    float cursor_y = position.y;
+    // line counter for calculating height
+    int line = 0;
     for (int i = 0; i < text_split.length; i++) {
-      String token = text_split[i];
-      float token_w = textWidth(token);
+      String token = text_split[i];  // get current token (word/character)
+      float token_w = textWidth(token);  // calculate text width of token
+      // set fill to normal color with alpha dependent on focus status
       if (is_focused) {
-        fill(red(c_normal), green(c_normal), blue(c_normal), alpha_focused);
+        fill(hue(c_normal), saturation(c_normal), brightness(c_normal), alpha_focused);
       } else {
-        fill(red(c_normal), green(c_normal), blue(c_normal), alpha_faded);
+        fill(hue(c_normal), saturation(c_normal), brightness(c_normal), alpha_faded);
       }
       for (String s : top_words) {
-        if (token.equals(s)) {
+        if (token.toLowerCase().equals(s)) {  // check if token is contained in top words
+          // set fill to top word color with alpha dependent on focus status
           if (is_focused) {
-            fill(red(c_topic), green(c_topic), blue(c_topic), alpha_focused);
+            fill(hue(c_top_word), saturation(c_top_word), brightness(c_top_word), alpha_focused);
           } else {
-            fill(red(c_topic), green(c_topic), blue(c_topic), alpha_faded);
+            fill(hue(c_top_word), saturation(c_top_word), brightness(c_top_word), alpha_faded);
           }
         }
       }
-      if (token.equals("\n") || x_current + token_w > position.x + w) {
-        x_current = position.x;
-        y_current += leading;
-      } else {
-        text(token, x_current, y_current);
+      // move cursor to next line
+      if (token.equals("\n") ||  // if token is new line
+        (cursor_x + token_w > position.x + w &&  // if word overflows
+        !token.equals(pattern_punc_white))) {  // except if punctuation or whitespace (keep attached to words) 
+        cursor_x = position.x;  // reset cursor x to left
+        line++;
+        cursor_y = position.y + line*leading;
       }
-      x_current += token_w;
+      text(token, cursor_x, cursor_y);
+      cursor_x += token_w;
     }
-
-    //pushMatrix();
-    //translate(position.x, position.y);
-    //text(text, 0, 0, w, h);
-    //popMatrix();
+    h = (line+1)*leading;
   }
 
   // Wraparound
   void borders() {
     if (position.x < -w) position.x = width+w;
     if (position.y < -w) position.y = height+w;
-    //if (position.z < z_back) position.z = z_front;
     if (position.x > width+w) position.x = -w;
     if (position.y > height+w) position.y = -w;
-    //if (position.z > z_front) position.z = z_back;
   }
 
   // Separation
@@ -195,7 +199,6 @@ class Tweet {
   PVector align (ArrayList<Tweet> tweets) {
     float neighbordist = 50;
     PVector sum = new PVector(0, 0);
-    //PVector sum = new PVector(0, 0, 0);
     int count = 0;
     for (Tweet other : tweets) {
       float d = PVector.dist(position, other.position);
@@ -214,7 +217,6 @@ class Tweet {
       return steer;
     } else {
       return new PVector(0, 0);
-      //return new PVector(0, 0, 0);
     }
   }
 
@@ -223,7 +225,6 @@ class Tweet {
   PVector cohesion (ArrayList<Tweet> tweets) {
     float neighbordist = 50;
     PVector sum = new PVector(0, 0);   // Start with empty vector to accumulate all positions
-    //PVector sum = new PVector(0, 0, 0);
     int count = 0;
     for (Tweet other : tweets) {
       float d = PVector.dist(position, other.position);
@@ -237,27 +238,25 @@ class Tweet {
       return seek(sum);  // Steer towards the position
     } else {
       return new PVector(0, 0);
-      //return new PVector(0, 0, 0);
     }
   }
 
   void checkMouse() {
-    if (mouseX > position.x - expand_padding && mouseX < position.x + w + expand_padding &&
-      mouseY > position.y - expand_padding && mouseY < position.y + h + expand_padding) {
-      if (mouseX > position.x - focus_padding && mouseX < position.x + w + focus_padding &&
-        mouseY > position.y - focus_padding && mouseY < position.y + h + focus_padding) {
+    if (!clicked) {
+      if (mouseX > position.x - expand_padding && mouseX < position.x + w + expand_padding &&
+        mouseY > position.y - expand_padding && mouseY < position.y + h + expand_padding) {
         is_focused = true;
+        weight_sep = weight_sep_expand;
+        weight_ali = weight_ali_expand;
+        weight_coh = weight_coh_expand;
+        maxspeed = maxspeed_expand;
+      } else {
+        is_focused = false;
+        weight_sep = weight_sep_flock;
+        weight_ali = weight_ali_flock;
+        weight_coh = weight_coh_flock;
+        maxspeed = maxspeed_flock;
       }
-      weight_sep = weight_sep_escape;
-      weight_ali = weight_ali_escape;
-      weight_coh = weight_coh_escape;
-      maxspeed = maxspeed_escape;
-    } else {
-      is_focused = false;
-      weight_sep = weight_sep_flock;
-      weight_ali = weight_ali_flock;
-      weight_coh = weight_coh_flock;
-      maxspeed = maxspeed_flock;
     }
   }
 }

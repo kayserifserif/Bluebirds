@@ -1,7 +1,10 @@
 class Analyser {
+  
+  // CONTENT
+  String[] statuses_array;
 
   // ANALYSIS
-  String[] wordsToIgnore = {"rt", "//t", "https", "co", "climate", "change", "hoax", "conspiracy", "global", "warming", "…", "it’s"};
+  String[] wordsToIgnore = {"rt", "//t", "https", "co", "climate", "change", "hoax", "conspiracy", "global", "warming", "…"};
 
   // WORDS
   int num_top_words = 10;
@@ -11,6 +14,11 @@ class Analyser {
   float padding = 30.0; 
   PVector pos = new PVector(padding, padding);
   float list_padding = 20.0;
+  color c = color(0, 50);
+  
+  Analyser(String[] statuses_array) {
+    this.statuses_array = statuses_array;
+  }
 
   void generateTopWords() {
     // Set arguments for concordance
@@ -22,7 +30,8 @@ class Analyser {
 
     // Create concordance
     String all_tweets = join(statuses_array, "\n");
-    Map conc = RiTa.concordance(all_tweets, conc_args);
+    String all_tweets_sanitised = all_tweets.replaceAll("“|”", "\"").replaceAll("‘|’", "'");
+    Map conc = RiTa.concordance(all_tweets_sanitised, conc_args);
     Set<String> tokens = conc.keySet();
     Iterator<String> iter = tokens.iterator();
 
@@ -33,7 +42,7 @@ class Analyser {
   }
 
   void displayTopWords() {
-    fill(0, 100.0);
+    fill(c);
     for (int i = 0; i < top_words.length; i++) {
       text(top_words[i], pos.x, pos.y + i*list_padding);
     }

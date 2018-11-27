@@ -10,7 +10,6 @@ TembooSession session = new TembooSession(
 String search_query = "('climate change' OR 'global warming') (hoax OR conspiracy) -is:retweet -'RT'";
 int tweet_count = 100;
 String[] statuses_array;
-Tweet[] tweets_array;
 
 // ANALYSIS
 Analyser analyser;
@@ -18,6 +17,7 @@ String[] top_words;
 
 // FLOCKING
 Flock flock;
+Tweet[] tweets_array;
 
 // DISPLAY
 PFont font;
@@ -25,15 +25,13 @@ int font_size = 12;
 
 void setup() {
   size(1280, 720);
-  //size(1280, 720, P3D);
-  //camera();
-  //lights();
+  colorMode(HSB, 360, 100, 100, 100);
 
   // Get Tweets
   runTweetsChoreo();
 
   // Analyse Tweets
-  analyser = new Analyser();
+  analyser = new Analyser(statuses_array);
   analyser.generateTopWords();
   top_words = analyser.getTopWords();
 
@@ -43,9 +41,6 @@ void setup() {
     String text = statuses_array[i];
     flock.addTweet(new Tweet(text, top_words));
   }
-  //for (Tweet t : tweets_array) {
-  //  flock.addTweet(t);
-  //}
 
   // Set typography
   font = createFont("data/LibreFranklin-Regular.ttf", font_size);
@@ -68,12 +63,11 @@ void runTweetsChoreo() {
     JSONObject status = statuses.getJSONObject(i);
     String text = status.getString("text");
     statuses_array[i] = text;
-    //tweets_array[i] = new Tweet(text, top_words);
   }
 }
 
 void draw() {
-  background(255);
+  background(0, 0, 100);
   flock.run();
   analyser.displayTopWords();
 }
