@@ -9,7 +9,7 @@ TembooSession session = new TembooSession(
   "katherine-yang", "climatechangedenial", "MNksrwJYgcp5BZfIvYMo67TBkIFwVlPp");
 String search_query = "('climate change' OR 'global warming') (hoax OR conspiracy) -is:retweet -'RT'";
 int tweet_count = 100;
-String[] statuses_array;
+JSONArray statuses_array;
 
 // ANALYSIS
 Analyser analyser;
@@ -35,16 +35,17 @@ void setup() {
   runTweetsChoreo();
 
   // analyse tweets
-  analyser = new Analyser(statuses_array);
+  analyser = new Analyser();
   analyser.generateTopWords();
   top_words = analyser.getTopWords();
 
   // create flock
   flock = new Flock();
-  tweets_array = new Tweet[statuses_array.length];
-  for (int i = 0; i < statuses_array.length; i++) {
-    String text = statuses_array[i];
-    tweets_array[i] = new Tweet(i, text);
+  tweets_array = new Tweet[statuses_array.size()];
+  for (int i = 0; i < statuses_array.size(); i++) {
+    JSONObject status = statuses_array.getJSONObject(i);
+    //String text = status.getString("text");
+    tweets_array[i] = new Tweet(status);
     flock.addTweet(tweets_array[i]);
   }
 
@@ -63,11 +64,24 @@ void runTweetsChoreo() {
   String results_str = tweetsResults.getResponse();
   JSONObject results = parseJSONObject(results_str);
   JSONArray statuses = results.getJSONArray("statuses");
-  statuses_array = new String[statuses.size()];
+  statuses_array = new JSONArray();
   for (int i = 0; i < statuses.size(); i++) {
     JSONObject status = statuses.getJSONObject(i);
+    
     String text = status.getString("text");
-    statuses_array[i] = text;
+    String timestamp = status.getString("created_at");
+    JSONObject user = status.getJSONObject("user");
+    String user_name = user.getString("name");
+    String user_screen_name = "@" + user.getString("screen_name");
+    
+    JSONObject status_new = new JSONObject();
+    status_new.setInt("id", i);
+    status_new.setString("text", text);
+    status_new.setString("timestamp", timestamp);
+    status_new.setString("user_name", user_name);
+    status_new.setString("user_screen_name", user_screen_name);
+    
+    statuses_array.setJSONObject(i, status_new);
   }
 }
 

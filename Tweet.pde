@@ -35,10 +35,13 @@ public class Tweet {
   color c_top_word = color(0, 80, 80);
 
   // DISPLAY
+  JSONObject status;
   String text;
-  float w = 250.0;
-  float h;
+  String timestamp;
+  String user_name, user_screen_name;
   float leading = font_size*1.2;
+  float w = 250.0;
+  float h = leading;
 
   // FOCUS
   float focus_padding = 10.0;
@@ -50,11 +53,15 @@ public class Tweet {
   int id;
   float anchor_x, anchor_y;
 
-  Tweet(int id, String text) {
-    this.id = id;
-    this.text = text;
+  //Tweet(int id, String text) {
+  Tweet(JSONObject status) {
+    this.status = status;
+    id = status.getInt("id");
+    text = status.getString("text");
     text_split = text.split(pattern_split);
-    //this.top_words = top_words;
+    timestamp = status.getString("timestamp");
+    user_name = status.getString("user_name");
+    user_screen_name = status.getString("user_screen_name");
 
     position = new PVector(width/2, height/2);
     acceleration = new PVector(0, 0);
