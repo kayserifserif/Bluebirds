@@ -54,6 +54,7 @@ class Tweet {
   float anchor_x, anchor_y;
   int font_size_normal = font_size;
   float font_size_featured = font_size_normal*1.05;
+  color c_featured = color(180, 10, 100);
 
   //Tweet(int id, String text) {
   Tweet(JSONObject status) {
@@ -123,16 +124,19 @@ class Tweet {
   }
 
   void render() {
-    textSize(font_size_normal);
+    //textSize(font_size_normal);
     if (featuring && featured_id == id) {
-      textSize(font_size_featured);
+      noStroke();
+      fill(hue(c_featured), saturation(c_featured), brightness(c_featured), alpha_faded);
+      rect(position.x - focus_padding, position.y - focus_padding, w + focus_padding*2, h + focus_padding*2);
+      //textSize(font_size_featured);
       fill(hue(c_normal), saturation(c_normal), brightness(c_normal), alpha_faded);
       text(user_name + " " + user_screen_name + " • " + timestamp, position.x, position.y - leading*1.5);
     }
     
     // set initial cursor to top left 
     float cursor_x = position.x;
-    float cursor_y = position.y;
+    float cursor_y = position.y + leading;
     // line counter for calculating height
     int line = 0;
     for (int i = 0; i < text_split.length; i++) {
@@ -160,7 +164,7 @@ class Tweet {
         !token.equals(pattern_punc_white))) {  // except if punctuation or whitespace (keep attached to words) 
         cursor_x = position.x;  // reset cursor x to left
         line++;
-        cursor_y = position.y + line*leading;
+        cursor_y = position.y + leading + line*leading;
       }
       text(token, cursor_x, cursor_y);
       cursor_x += token_w;
