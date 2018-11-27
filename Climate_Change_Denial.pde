@@ -3,6 +3,7 @@ import com.temboo.core.*;
 import com.temboo.Library.Twitter.Search.*;
 import rita.*;
 import java.util.*;
+import java.text.*;
 
 // TWEETS
 TembooSession session = new TembooSession(
@@ -10,6 +11,10 @@ TembooSession session = new TembooSession(
 String search_query = "('climate change' OR 'global warming') (hoax OR conspiracy) -is:retweet -'RT'";
 int tweet_count = 100;
 JSONArray statuses_array;
+
+// TIMESTAMPS
+SimpleDateFormat parser = new SimpleDateFormat("EEE MMM dd kk:mm:ss XX yyyy");
+SimpleDateFormat formatter = new SimpleDateFormat("MMM dd yyyy");
 
 // ANALYSIS
 Analyser analyser;
@@ -69,7 +74,14 @@ void runTweetsChoreo() {
     JSONObject status = statuses.getJSONObject(i);
     
     String text = status.getString("text");
-    String timestamp = status.getString("created_at");
+    String timestamp_input = status.getString("created_at");
+    String timestamp;
+    try {
+      Date date = parser.parse(timestamp_input);
+      timestamp = formatter.format(date);
+    } catch(Exception e) {
+      timestamp = "MMM dd yyyy";
+    }
     JSONObject user = status.getJSONObject("user");
     String user_name = user.getString("name");
     String user_screen_name = "@" + user.getString("screen_name");

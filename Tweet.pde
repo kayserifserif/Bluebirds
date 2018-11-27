@@ -1,4 +1,4 @@
-public class Tweet {
+class Tweet {
 
   // MOTION
   PVector position;
@@ -52,6 +52,8 @@ public class Tweet {
   // FEATURE
   int id;
   float anchor_x, anchor_y;
+  int font_size_normal = font_size;
+  float font_size_featured = font_size_normal*1.05;
 
   //Tweet(int id, String text) {
   Tweet(JSONObject status) {
@@ -121,6 +123,13 @@ public class Tweet {
   }
 
   void render() {
+    textSize(font_size_normal);
+    if (featuring && featured_id == id) {
+      textSize(font_size_featured);
+      fill(hue(c_normal), saturation(c_normal), brightness(c_normal), alpha_faded);
+      text(user_name + " " + user_screen_name + " • " + timestamp, position.x, position.y - leading*1.5);
+    }
+    
     // set initial cursor to top left 
     float cursor_x = position.x;
     float cursor_y = position.y;
