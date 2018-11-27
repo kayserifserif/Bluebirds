@@ -43,8 +43,9 @@ class Analyser {
 
   void displayTopWords() {
     fill(c);
+    text("TOP SECONDARY WORDS", pos.x, pos.y);
     for (int i = 0; i < top_words.length; i++) {
-      text(top_words[i], pos.x, pos.y + i*list_padding);
+      text(top_words[i], pos.x, pos.y + (i+1)*list_padding);
     }
   }
 

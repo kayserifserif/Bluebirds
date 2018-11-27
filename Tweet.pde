@@ -252,18 +252,19 @@ public class Tweet {
       maxspeed = maxspeed_expand;
       if (mousePressed) {
         if (!featuring) {
-          featuring = true;
-          featured_id = id;
+          featuring = true;  // activate
+          featured_id = id;  // let only this tweet be dragged
+          // create mouse anchor point in relation to top left corner
           anchor_x = mouseX - position.x;
           anchor_y = mouseY - position.y;
-          println(anchor_x, anchor_y);
         }
+        // let mouse drag tweet
         if (featuring && featured_id == id) {
-          //maxspeed = 0.0;
           position.x = mouseX - anchor_x;
           position.y = mouseY - anchor_y;
         }
       } else {
+        // give random velocity after release
         if (velocity.mag() == 0) {
           velocity = PVector.random2D();
         }
@@ -275,6 +276,7 @@ public class Tweet {
       weight_coh = weight_coh_flock;
       maxspeed = maxspeed_flock;
     }
+    // if mouse not pressed, turn featuring off
     if (!mousePressed) {
       featuring = false;
     }

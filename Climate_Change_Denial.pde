@@ -31,23 +31,24 @@ void setup() {
   size(1280, 720);
   colorMode(HSB, 360, 100, 100, 100);
 
-  // Get Tweets
+  // get tweets
   runTweetsChoreo();
 
-  // Analyse Tweets
+  // analyse tweets
   analyser = new Analyser(statuses_array);
   analyser.generateTopWords();
   top_words = analyser.getTopWords();
 
-  // Create flock
+  // create flock
   flock = new Flock();
+  tweets_array = new Tweet[statuses_array.length];
   for (int i = 0; i < statuses_array.length; i++) {
     String text = statuses_array[i];
     tweets_array[i] = new Tweet(i, text);
     flock.addTweet(tweets_array[i]);
   }
 
-  // Set typography
+  // set typography
   font = createFont("data/LibreFranklin-Regular.ttf", font_size);
   textFont(font);
 }
@@ -63,7 +64,6 @@ void runTweetsChoreo() {
   JSONObject results = parseJSONObject(results_str);
   JSONArray statuses = results.getJSONArray("statuses");
   statuses_array = new String[statuses.size()];
-  tweets_array = new Tweet[statuses.size()];
   for (int i = 0; i < statuses.size(); i++) {
     JSONObject status = statuses.getJSONObject(i);
     String text = status.getString("text");
