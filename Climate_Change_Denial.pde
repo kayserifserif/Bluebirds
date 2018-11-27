@@ -7,13 +7,14 @@ import java.util.*;
 // TWEETS
 TembooSession session = new TembooSession(
   "katherine-yang", "climatechangedenial", "MNksrwJYgcp5BZfIvYMo67TBkIFwVlPp");
-String search_query = "('climate change' OR 'global warming') (hoax OR conspiracy) -is:retweet";
+String search_query = "('climate change' OR 'global warming') (hoax OR conspiracy) -is:retweet -'RT'";
 int tweet_count = 100;
 String[] statuses_array;
 Tweet[] tweets_array;
 
 // ANALYSIS
-Concordance concordance;
+Analyser analyser;
+String[] top_words;
 
 // FLOCKING
 Flock flock;
@@ -32,14 +33,19 @@ void setup() {
   runTweetsChoreo();
 
   // Analyse Tweets
-  concordance = new Concordance();
-  concordance.createConcordance();
+  analyser = new Analyser();
+  analyser.generateTopWords();
+  top_words = analyser.getTopWords();
 
   // Create flock
   flock = new Flock();
-  for (Tweet t : tweets_array) {
-    flock.addTweet(t);
+  for (int i = 0; i < statuses_array.length; i++) {
+    String text = statuses_array[i];
+    flock.addTweet(new Tweet(text, top_words));
   }
+  //for (Tweet t : tweets_array) {
+  //  flock.addTweet(t);
+  //}
 
   // Set typography
   font = createFont("data/LibreFranklin-Regular.ttf", font_size);
@@ -62,12 +68,12 @@ void runTweetsChoreo() {
     JSONObject status = statuses.getJSONObject(i);
     String text = status.getString("text");
     statuses_array[i] = text;
-    tweets_array[i] = new Tweet(text);
+    //tweets_array[i] = new Tweet(text, top_words);
   }
 }
 
 void draw() {
   background(255);
   flock.run();
-  concordance.displayConcordance();
+  analyser.displayTopWords();
 }

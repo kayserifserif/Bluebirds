@@ -8,11 +8,13 @@ class Tweet {
   float maxspeed_escape = 1.0;
   float maxspeed_flock = 3.0;
   float maxspeed = maxspeed_flock;
-  
+
   // ANALYSIS
-  //String[] top_words;
-  //color c_normal = color(0, 0, 0);
-  //color c_topic = color(200, 50, 50);
+  String[] top_words;
+  String split_pattern = "(?<=\\s+)|(?=\\s+)|\\s+|(?=\\p{Punct})|(?<=\\p{Punct})";
+  String[] text_split;
+  color c_normal = color(0, 0, 0);
+  color c_topic = color(200, 50, 50);
 
   // DISPLAY
   String text;
@@ -21,6 +23,8 @@ class Tweet {
   //float z_back = -100.0;
   //float z_front = 100.0;
   float expand_padding = 50.0;
+  int font_size = 12;
+  float leading = font_size*1.2;
 
   // FOCUS
   float focus_padding = 10.0;
@@ -39,8 +43,9 @@ class Tweet {
   float weight_coh_flock = 2.5;
   float weight_coh = weight_coh_flock;
 
-  Tweet(String text) {
+  Tweet(String text, String[] top_words) {
     this.text = text;
+    this.top_words = top_words;
     //position = new PVector(random(width), random(height));
     //position = new PVector(random(width), random(height), random(z_back, z_front));
     position = new PVector(width/2, height/2);
@@ -49,6 +54,8 @@ class Tweet {
     //acceleration = new PVector(0, 0, 0);
     velocity = PVector.random2D();
     //velocity = PVector.random3D();
+
+    text_split = text.split(split_pattern);
   }
 
   void run(ArrayList<Tweet> tweets) {
@@ -104,18 +111,38 @@ class Tweet {
   }
 
   void render() {
-    //fill(0);
-    if (is_focused) {
-      fill(0, alpha_focused);
-    } else {
-      fill(0, alpha_faded);
+    float x_current = position.x;
+    float y_current = position.y;
+    for (int i = 0; i < text_split.length; i++) {
+      String token = text_split[i];
+      float token_w = textWidth(token);
+      if (is_focused) {
+        fill(red(c_normal), green(c_normal), blue(c_normal), alpha_focused);
+      } else {
+        fill(red(c_normal), green(c_normal), blue(c_normal), alpha_faded);
+      }
+      for (String s : top_words) {
+        if (token.equals(s)) {
+          if (is_focused) {
+            fill(red(c_topic), green(c_topic), blue(c_topic), alpha_focused);
+          } else {
+            fill(red(c_topic), green(c_topic), blue(c_topic), alpha_faded);
+          }
+        }
+      }
+      if (token.equals("\n") || x_current + token_w > position.x + w) {
+        x_current = position.x;
+        y_current += leading;
+      } else {
+        text(token, x_current, y_current);
+      }
+      x_current += token_w;
     }
-    pushMatrix();
-    translate(position.x, position.y);
-    //translate(position.x, position.y, position.z);
-    text(text, 0, 0, w, h);
-    //text(text, position.x, position.y, w, h);
-    popMatrix();
+
+    //pushMatrix();
+    //translate(position.x, position.y);
+    //text(text, 0, 0, w, h);
+    //popMatrix();
   }
 
   // Wraparound
