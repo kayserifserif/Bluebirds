@@ -33,7 +33,7 @@ int featured_id;
 boolean featuring = false;
 
 void setup() {
-  size(1280, 720, P3D);
+  size(1280, 720, P2D);
   colorMode(HSB, 360, 100, 100, 100);
 
   // get tweets
