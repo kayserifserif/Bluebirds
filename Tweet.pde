@@ -1,4 +1,4 @@
-class Tweet {
+public class Tweet {
 
   // MOTION
   PVector position;
@@ -22,7 +22,7 @@ class Tweet {
   float weight_coh = weight_coh_flock;
 
   // ANALYSIS
-  String[] top_words;
+  //String[] top_words;
   String pattern_split =
     "(?<=\\s+)|(?=\\s+)" +  // lookbehind and lookahead whitespace
     // from https://stackoverflow.com/questions/31273020/how-to-split-a-string-while-maintaining-whitespace
@@ -37,23 +37,24 @@ class Tweet {
   // DISPLAY
   String text;
   float w = 250.0;
-  float h = 250.0;
-  int font_size = 12;
+  float h;
   float leading = font_size*1.2;
 
   // FOCUS
   float focus_padding = 10.0;
-  boolean is_focused = false;
+  boolean is_hovered = false;
   float alpha_faded = 50.0;
-  float alpha_focused = 100.0;
+  float alpha_hovered = 100.0;
 
   // FEATURE
-  boolean clicked = false;
+  int id;
+  float anchor_x, anchor_y;
 
-  Tweet(String text, String[] top_words) {
+  Tweet(int id, String text) {
+    this.id = id;
     this.text = text;
     text_split = text.split(pattern_split);
-    this.top_words = top_words;
+    //this.top_words = top_words;
 
     position = new PVector(width/2, height/2);
     acceleration = new PVector(0, 0);
@@ -64,7 +65,7 @@ class Tweet {
     flock(tweets);
     update();
     borders();
-    checkMouse();
+    checkHover();
     render();
   }
 
@@ -122,16 +123,16 @@ class Tweet {
       String token = text_split[i];  // get current token (word/character)
       float token_w = textWidth(token);  // calculate text width of token
       // set fill to normal color with alpha dependent on focus status
-      if (is_focused) {
-        fill(hue(c_normal), saturation(c_normal), brightness(c_normal), alpha_focused);
+      if (is_hovered) {
+        fill(hue(c_normal), saturation(c_normal), brightness(c_normal), alpha_hovered);
       } else {
         fill(hue(c_normal), saturation(c_normal), brightness(c_normal), alpha_faded);
       }
       for (String s : top_words) {
         if (token.toLowerCase().equals(s)) {  // check if token is contained in top words
           // set fill to top word color with alpha dependent on focus status
-          if (is_focused) {
-            fill(hue(c_top_word), saturation(c_top_word), brightness(c_top_word), alpha_focused);
+          if (is_hovered) {
+            fill(hue(c_top_word), saturation(c_top_word), brightness(c_top_word), alpha_hovered);
           } else {
             fill(hue(c_top_word), saturation(c_top_word), brightness(c_top_word), alpha_faded);
           }
@@ -241,22 +242,41 @@ class Tweet {
     }
   }
 
-  void checkMouse() {
-    if (!clicked) {
-      if (mouseX > position.x - expand_padding && mouseX < position.x + w + expand_padding &&
-        mouseY > position.y - expand_padding && mouseY < position.y + h + expand_padding) {
-        is_focused = true;
-        weight_sep = weight_sep_expand;
-        weight_ali = weight_ali_expand;
-        weight_coh = weight_coh_expand;
-        maxspeed = maxspeed_expand;
+  void checkHover() {
+    if (mouseX > position.x - expand_padding && mouseX < position.x + w + expand_padding &&
+      mouseY > position.y - expand_padding && mouseY < position.y + h + expand_padding) {
+      is_hovered = true;
+      weight_sep = weight_sep_expand;
+      weight_ali = weight_ali_expand;
+      weight_coh = weight_coh_expand;
+      maxspeed = maxspeed_expand;
+      if (mousePressed) {
+        if (!featuring) {
+          featuring = true;
+          featured_id = id;
+          anchor_x = mouseX - position.x;
+          anchor_y = mouseY - position.y;
+          println(anchor_x, anchor_y);
+        }
+        if (featuring && featured_id == id) {
+          //maxspeed = 0.0;
+          position.x = mouseX - anchor_x;
+          position.y = mouseY - anchor_y;
+        }
       } else {
-        is_focused = false;
-        weight_sep = weight_sep_flock;
-        weight_ali = weight_ali_flock;
-        weight_coh = weight_coh_flock;
-        maxspeed = maxspeed_flock;
+        if (velocity.mag() == 0) {
+          velocity = PVector.random2D();
+        }
       }
+    } else {
+      is_hovered = false;
+      weight_sep = weight_sep_flock;
+      weight_ali = weight_ali_flock;
+      weight_coh = weight_coh_flock;
+      maxspeed = maxspeed_flock;
+    }
+    if (!mousePressed) {
+      featuring = false;
     }
   }
 }

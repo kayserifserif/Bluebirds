@@ -23,6 +23,10 @@ Tweet[] tweets_array;
 PFont font;
 int font_size = 12;
 
+// FEATURE
+int featured_id;
+boolean featuring = false;
+
 void setup() {
   size(1280, 720);
   colorMode(HSB, 360, 100, 100, 100);
@@ -39,7 +43,8 @@ void setup() {
   flock = new Flock();
   for (int i = 0; i < statuses_array.length; i++) {
     String text = statuses_array[i];
-    flock.addTweet(new Tweet(text, top_words));
+    tweets_array[i] = new Tweet(i, text);
+    flock.addTweet(tweets_array[i]);
   }
 
   // Set typography
