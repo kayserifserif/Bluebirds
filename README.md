@@ -6,6 +6,8 @@ Final project for USC IML-288: Critical Thinking and Procedural Media with [John
 
 ## Libraries
 
+Install: Sketch > Import Library… > Add Library…
+
 * [Temboo](https://temboo.com/processing)
 * [RiTa](https://rednoise.org/rita/)
 
