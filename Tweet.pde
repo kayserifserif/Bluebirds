@@ -1,3 +1,5 @@
+// flocking code from https://processing.org/examples/flocking.html
+
 class Tweet {
 
   // MOTION
