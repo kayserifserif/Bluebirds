@@ -8,7 +8,7 @@ import java.text.*;
 // TWEETS
 TembooSession session = new TembooSession(
   "katherine-yang", "climatechangedenial", "MNksrwJYgcp5BZfIvYMo67TBkIFwVlPp");
-String search_query = "('climate change' OR 'global warming') (hoax OR conspiracy) -is:retweet -'RT'";
+String search_query = "('climate change' OR 'global warming') (hoax OR conspiracy OR scam) -is:retweet -'RT'";
 int tweet_count = 100;
 JSONArray statuses_array;
 

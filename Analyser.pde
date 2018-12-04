@@ -4,7 +4,7 @@ class Analyser {
   String[] texts;
 
   // ANALYSIS
-  String[] wordsToIgnore = {"rt", "//t", "https", "co", "climate", "change", "hoax", "conspiracy", "global", "warming", "…"};
+  String[] wordsToIgnore = {"rt", "//t", "https", "co", "climate", "change", "hoax", "conspiracy", "scam", "global", "warming", "…"};
 
   // WORDS
   int num_top_words = 10;
