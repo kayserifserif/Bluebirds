@@ -63,8 +63,8 @@ class Tweet {
     text = status.getString("text");
     text_split = text.split(pattern_split);
     timestamp = status.getString("timestamp");
-    user_name = status.getString("user_name");
-    user_screen_name = status.getString("user_screen_name");
+    user_name = status.getString("name");
+    user_screen_name = status.getString("username");
 
     position = new PVector(width/2, height/2);
     acceleration = new PVector(0, 0);
@@ -128,7 +128,7 @@ class Tweet {
     if (featuring && featured_id == id) {
       noStroke();
       fill(hue(c_featured), saturation(c_featured), brightness(c_featured), alpha_faded);
-      rect(position.x - focus_padding, position.y - focus_padding, w + focus_padding*2, h + focus_padding*2);
+      rect(position.x - focus_padding, position.y - focus_padding, w + focus_padding*2, h + focus_padding*2.2);
       //textSize(font_size_featured);
       fill(hue(c_normal), saturation(c_normal), brightness(c_normal), alpha_faded);
       text(user_name + " " + user_screen_name + " • " + timestamp, position.x, position.y - leading*1.5);
