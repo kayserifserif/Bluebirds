@@ -24,20 +24,19 @@ class Tweet {
   float weight_coh = weight_coh_flock;
 
   // ANALYSIS
-  //String[] top_words;
   String pattern_split =
-    "(?<=\\s+)|(?=\\s+)" +  // lookbehind and lookahead whitespace
+    "(?<=\\s+)|(?=\\s+)";  // lookbehind and lookahead whitespace
     // from https://stackoverflow.com/questions/31273020/how-to-split-a-string-while-maintaining-whitespace
-    "|" +
-    "\\s+|(?=\\p{P})|(?<=\\p{P})";  // split punctuation
-  // from https://stackoverflow.com/questions/24222730/split-a-string-and-separate-by-punctuation-and-whitespace
+    //"|" +
+    //"\\s+|(?=\\p{P})|(?<=\\p{P})";  // split punctuation
+  //from https://stackoverflow.com/questions/24222730/split-a-string-and-separate-by-punctuation-and-whitespace
   String pattern_punc_white = "[\\p{P}|\\s]";  // match punctuation and whitespace
   String[] text_split;
   color c_normal = color(0, 0, 0);
   color c_top_word = color(0, 80, 80);
 
   // DISPLAY
-  JSONObject status;
+  processing.data.JSONObject status;
   String text;
   String timestamp;
   String user_name, user_screen_name;
@@ -58,8 +57,7 @@ class Tweet {
   float font_size_featured = font_size_normal*1.05;
   color c_featured = color(180, 10, 100);
 
-  //Tweet(int id, String text) {
-  Tweet(JSONObject status) {
+  Tweet(processing.data.JSONObject status) {
     this.status = status;
     id = status.getInt("id");
     text = status.getString("text");
