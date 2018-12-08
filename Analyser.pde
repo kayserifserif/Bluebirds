@@ -4,8 +4,8 @@ class Analyser {
   String[] texts;
 
   // ANALYSIS
-  String[] wordsToIgnore = {"rt", "//t", "https", "co",
-    "climate", "change", "global", "warming",
+  String[] wordsToIgnore = {"rt", "//t", "https", "co", 
+    "climate", "change", "global", "warming", 
     //"hoax", "conspiracy", "scam", "fake", "concept",
     "…"};
 
@@ -18,6 +18,7 @@ class Analyser {
   PVector pos = new PVector(padding, padding);
   float list_padding = 20.0;
   color c = color(0, 50);
+  float font_size;
 
   Analyser() {
     texts = new String[statuses_array.size()];
@@ -50,6 +51,7 @@ class Analyser {
 
   void displayTopWords() {
     fill(c);
+    textSize(font_size_max);
     text("TOP SECONDARY WORDS", pos.x, pos.y);
     for (int i = 0; i < top_words.length; i++) {
       text(top_words[i], pos.x, pos.y + (i+1)*list_padding);
