@@ -10,25 +10,26 @@ class Tweet {
   float maxspeed_expand = 1.0;
   float maxspeed_flock = 3.0;
   float maxspeed = maxspeed_flock;
-  float expand_padding = 40.0;
+  float expand_padding;
+  float theta;
 
   // WEIGHTING
-  float weight_sep_expand = 10.0;
+  float weight_sep_expand = 3.0;
   float weight_sep_flock = 1.5;
   float weight_sep = weight_sep_flock;
-  float weight_ali_expand = 0.1;
-  float weight_ali_flock = 2.0;
+  float weight_ali_expand = 0.5;
+  float weight_ali_flock = 1.5;
   float weight_ali = weight_ali_flock;
-  float weight_coh_expand = 0.1;
-  float weight_coh_flock = 2.5;
+  float weight_coh_expand = 0.5;
+  float weight_coh_flock = 1.5;
   float weight_coh = weight_coh_flock;
 
   // ANALYSIS
   String pattern_split =
     "(?<=\\s+)|(?=\\s+)";  // lookbehind and lookahead whitespace
-    // from https://stackoverflow.com/questions/31273020/how-to-split-a-string-while-maintaining-whitespace
-    //"|" +
-    //"\\s+|(?=\\p{P})|(?<=\\p{P})";  // split punctuation
+  // from https://stackoverflow.com/questions/31273020/how-to-split-a-string-while-maintaining-whitespace
+  //"|" +
+  //"\\s+|(?=\\p{P})|(?<=\\p{P})";  // split punctuation
   //from https://stackoverflow.com/questions/24222730/split-a-string-and-separate-by-punctuation-and-whitespace
   String pattern_punc_white = "[\\p{P}|\\s]";  // match punctuation and whitespace
   String[] text_split;
@@ -36,13 +37,23 @@ class Tweet {
   color c_top_word = color(0, 80, 80);
 
   // DISPLAY
+  int state;  // 0 = bird, 1 = text
+  float w;
+  float h;
+
+  // IMAGE
+  float image_size = 40.0;
+  float image_padding = 10.0;
+
+  // TEXT
   processing.data.JSONObject status;
   String text;
+  String[] text_split_white;
   String timestamp;
-  String user_name, user_screen_name;
+  String name, username;
   float leading = font_size*1.2;
-  float w = 250.0;
-  float h = leading;
+  float para_width = 250.0;
+  float para_padding = 40.0;
 
   // FOCUS
   float focus_padding = 10.0;
@@ -63,12 +74,14 @@ class Tweet {
     text = status.getString("text");
     text_split = text.split(pattern_split);
     timestamp = status.getString("timestamp");
-    user_name = status.getString("name");
-    user_screen_name = status.getString("username");
+    name = status.getString("name");
+    username = status.getString("username");
 
     position = new PVector(width/2, height/2);
     acceleration = new PVector(0, 0);
     velocity = PVector.random2D();
+
+    state = 0;
   }
 
   void run(ArrayList<Tweet> tweets) {
@@ -124,52 +137,66 @@ class Tweet {
   }
 
   void render() {
-    //textSize(font_size_normal);
-    if (featuring && featured_id == id) {
-      noStroke();
-      fill(hue(c_featured), saturation(c_featured), brightness(c_featured), alpha_faded);
-      rect(position.x - focus_padding, position.y - focus_padding, w + focus_padding*2, h + focus_padding*2.2);
-      //textSize(font_size_featured);
-      fill(hue(c_normal), saturation(c_normal), brightness(c_normal), alpha_faded);
-      text(user_name + " " + user_screen_name + " • " + timestamp, position.x, position.y - leading*1.5);
-    }
-    
-    // set initial cursor to top left 
-    float cursor_x = position.x;
-    float cursor_y = position.y + leading;
-    // line counter for calculating height
-    int line = 0;
-    for (int i = 0; i < text_split.length; i++) {
-      String token = text_split[i];  // get current token (word/character)
-      float token_w = textWidth(token);  // calculate text width of token
-      // set fill to normal color with alpha dependent on focus status
-      if (is_hovered) {
-        fill(hue(c_normal), saturation(c_normal), brightness(c_normal), alpha_hovered);
-      } else {
+    if (state == 0) {
+      w = image_size;
+      h = image_size;
+      theta = velocity.heading() + radians(90);
+      pushMatrix();
+      translate(position.x, position.y);
+      rotate(theta);
+      //shape(bird_shape, position.x, position.y, image_size, image_size);
+      image(bird, 0, 0, image_size, image_size);
+      popMatrix();
+    } else {
+      w = para_width;
+      if (featuring && featured_id == id) {
+        noStroke();
+        fill(hue(c_featured), saturation(c_featured), brightness(c_featured), alpha_faded);
+        rect(position.x - focus_padding, position.y - focus_padding, w + focus_padding*2, h + focus_padding*2.2);
         fill(hue(c_normal), saturation(c_normal), brightness(c_normal), alpha_faded);
+        text(name + " @" + username + " • " + timestamp, position.x, position.y - leading*1.5);
       }
-      for (String s : top_words) {
-        if (token.toLowerCase().equals(s)) {  // check if token is contained in top words
-          // set fill to top word color with alpha dependent on focus status
-          if (is_hovered) {
-            fill(hue(c_top_word), saturation(c_top_word), brightness(c_top_word), alpha_hovered);
-          } else {
-            fill(hue(c_top_word), saturation(c_top_word), brightness(c_top_word), alpha_faded);
+
+      // set initial cursor to top left 
+      float cursor_x = position.x;
+      float cursor_y = position.y + leading;
+      // line counter for calculating height
+      int line = 0;
+      for (int i = 0; i < text_split.length; i++) {
+        String token = text_split[i];  // get current token (word/character)
+        String[] token_split = RiTa.tokenize(token);
+        float token_w = textWidth(token);  // calculate text width of token
+        // set fill to normal color with alpha dependent on focus status
+        if (is_hovered) {
+          fill(hue(c_normal), saturation(c_normal), brightness(c_normal), alpha_hovered);
+        } else {
+          fill(hue(c_normal), saturation(c_normal), brightness(c_normal), alpha_faded);
+        }
+        for (String s : token_split) {
+          for (String top_word : top_words) {
+            if (s.toLowerCase().equals(top_word)) {  // check if token is contained in top words
+              // set fill to top word color with alpha dependent on focus status
+              if (is_hovered) {
+                fill(hue(c_top_word), saturation(c_top_word), brightness(c_top_word), alpha_hovered);
+              } else {
+                fill(hue(c_top_word), saturation(c_top_word), brightness(c_top_word), alpha_faded);
+              }
+            }
           }
         }
+        // move cursor to next line
+        if (token.equals("\n") ||  // if token is new line
+          (cursor_x + token_w > position.x + w &&  // if word overflows
+          !token.equals(pattern_punc_white))) {  // except if punctuation or whitespace (keep attached to words) 
+          cursor_x = position.x;  // reset cursor x to left
+          line++;
+          cursor_y = position.y + leading + line*leading;
+        }
+        text(token, cursor_x, cursor_y);
+        cursor_x += token_w;
       }
-      // move cursor to next line
-      if (token.equals("\n") ||  // if token is new line
-        (cursor_x + token_w > position.x + w &&  // if word overflows
-        !token.equals(pattern_punc_white))) {  // except if punctuation or whitespace (keep attached to words) 
-        cursor_x = position.x;  // reset cursor x to left
-        line++;
-        cursor_y = position.y + leading + line*leading;
-      }
-      text(token, cursor_x, cursor_y);
-      cursor_x += token_w;
+      h = (line+1)*leading;
     }
-    h = (line+1)*leading;
   }
 
   // Wraparound
@@ -263,6 +290,11 @@ class Tweet {
   }
 
   void checkHover() {
+    if (state == 0) {
+      expand_padding = image_padding;
+    } else {
+      expand_padding = para_padding;
+    }
     if (mouseX > position.x - expand_padding && mouseX < position.x + w + expand_padding &&
       mouseY > position.y - expand_padding && mouseY < position.y + h + expand_padding) {
       is_hovered = true;
@@ -271,6 +303,8 @@ class Tweet {
       weight_coh = weight_coh_expand;
       maxspeed = maxspeed_expand;
       if (mousePressed) {
+        state = 1;
+        h = leading;
         if (!featuring) {
           featuring = true;  // activate
           featured_id = id;  // let only this tweet be dragged
@@ -284,6 +318,7 @@ class Tweet {
           position.y = mouseY - anchor_y;
         }
       } else {
+        state = 0;
         // give random velocity after release
         if (velocity.mag() == 0) {
           velocity = PVector.random2D();
@@ -291,6 +326,7 @@ class Tweet {
       }
     } else {
       is_hovered = false;
+      state = 0;
       weight_sep = weight_sep_flock;
       weight_ali = weight_ali_flock;
       weight_coh = weight_coh_flock;

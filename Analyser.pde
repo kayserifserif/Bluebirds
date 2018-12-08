@@ -6,7 +6,7 @@ class Analyser {
   // ANALYSIS
   String[] wordsToIgnore = {"rt", "//t", "https", "co",
     "climate", "change", "global", "warming",
-    "hoax", "conspiracy", "scam", "fake", "concept",
+    //"hoax", "conspiracy", "scam", "fake", "concept",
     "…"};
 
   // WORDS
