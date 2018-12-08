@@ -2,6 +2,14 @@
 
 class Tweet {
 
+  // CONTENT
+  processing.data.JSONObject status;
+  String text;
+  String[] text_split_white;
+  String timestamp;
+  String name;
+  String username;
+
   // MOTION
   PVector position;
   PVector velocity;
@@ -40,20 +48,19 @@ class Tweet {
   int state;  // 0 = bird, 1 = text
   float w;
   float h;
+  int anim_start;
+  int anim_delay = 5;
 
   // IMAGE
   float image_size = 40.0;
   float image_padding = 10.0;
 
   // TEXT
-  processing.data.JSONObject status;
-  String text;
-  String[] text_split_white;
-  String timestamp;
-  String name, username;
-  float leading = font_size*1.2;
+  float leading = font_size_max*1.2;
   float para_width = 250.0;
   float para_padding = 40.0;
+  float font_size;
+  float font_size_increment = 0.5;
 
   // FOCUS
   float focus_padding = 10.0;
@@ -63,12 +70,12 @@ class Tweet {
 
   // FEATURE
   int id;
-  float anchor_x, anchor_y;
-  int font_size_normal = font_size;
-  float font_size_featured = font_size_normal*1.05;
+  float anchor_x;
+  float anchor_y;
   color c_featured = color(180, 10, 100);
 
   Tweet(processing.data.JSONObject status) {
+    // content
     this.status = status;
     id = status.getInt("id");
     text = status.getString("text");
@@ -77,10 +84,12 @@ class Tweet {
     name = status.getString("name");
     username = status.getString("username");
 
+    // motion
     position = new PVector(width/2, height/2);
     acceleration = new PVector(0, 0);
     velocity = PVector.random2D();
 
+    // display
     state = 0;
   }
 
@@ -149,14 +158,8 @@ class Tweet {
       popMatrix();
     } else {
       w = para_width;
-      if (featuring && featured_id == id) {
-        noStroke();
-        fill(hue(c_featured), saturation(c_featured), brightness(c_featured), alpha_faded);
-        rect(position.x - focus_padding, position.y - focus_padding, w + focus_padding*2, h + focus_padding*2.2);
-        fill(hue(c_normal), saturation(c_normal), brightness(c_normal), alpha_faded);
-        text(name + " @" + username + " • " + timestamp, position.x, position.y - leading*1.5);
-      }
 
+      textSize(font_size);
       // set initial cursor to top left 
       float cursor_x = position.x;
       float cursor_y = position.y + leading;
@@ -197,6 +200,13 @@ class Tweet {
       }
       h = (line+1)*leading;
     }
+      if (featuring && featured_id == id) {
+        noStroke();
+        fill(hue(c_featured), saturation(c_featured), brightness(c_featured), alpha_faded);
+        rect(position.x - focus_padding, position.y - focus_padding, w + focus_padding*2, h + focus_padding*2.2);
+        fill(hue(c_normal), saturation(c_normal), brightness(c_normal), alpha_faded);
+        text(name + " @" + username + " • " + timestamp, position.x, position.y - leading*1.5);
+      }
   }
 
   // Wraparound
@@ -295,6 +305,16 @@ class Tweet {
     } else {
       expand_padding = para_padding;
     }
+    pushMatrix();
+    //// debug
+    noStroke();
+    fill(255, 0, 0, 10);
+    ellipse(position.x, position.y, 5, 5);
+    noFill();
+    stroke(0, 10);
+    rect(position.x, position.y, w, h);
+    rect(position.x - expand_padding, position.y - expand_padding, w + expand_padding * 2, h + expand_padding*2);
+    ////
     if (mouseX > position.x - expand_padding && mouseX < position.x + w + expand_padding &&
       mouseY > position.y - expand_padding && mouseY < position.y + h + expand_padding) {
       is_hovered = true;
@@ -311,11 +331,16 @@ class Tweet {
           // create mouse anchor point in relation to top left corner
           anchor_x = mouseX - position.x;
           anchor_y = mouseY - position.y;
+          anim_start = millis();
         }
         // let mouse drag tweet
         if (featuring && featured_id == id) {
           position.x = mouseX - anchor_x;
           position.y = mouseY - anchor_y;
+        }
+        if (millis() > anim_start + anim_delay && font_size < font_size_max) {
+          font_size += font_size_increment;
+          anim_start = millis();
         }
       } else {
         state = 0;
@@ -327,6 +352,7 @@ class Tweet {
     } else {
       is_hovered = false;
       state = 0;
+      font_size = font_size_min;
       weight_sep = weight_sep_flock;
       weight_ali = weight_ali_flock;
       weight_coh = weight_coh_flock;
@@ -336,5 +362,6 @@ class Tweet {
     if (!mousePressed) {
       featuring = false;
     }
+    popMatrix();
   }
 }
