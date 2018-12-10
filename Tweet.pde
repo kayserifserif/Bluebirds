@@ -191,7 +191,7 @@ class Tweet {
       // set rotation
       theta = velocity.heading() + radians(90);
       // set color
-      if (analyser_hovered && text_split_list.contains(hovered_word)) {
+      if (analyser_hovered && text.toLowerCase().contains(hovered_word)) {
         bird.setFill(c_top_word);
       } else {
         bird.setFill(c_bluebird);
@@ -430,9 +430,15 @@ class Tweet {
       weight_ali = weight_ali_flock;
       weight_coh = weight_coh_flock;
       maxspeed = maxspeed_flock;
-      if (text_split_list.contains(hovered_word) && word_pressed) {
-        state = 1;
-        scale_factor = 1.0;
+      //if (text_split_list.contains(hovered_word) && word_pressed) {
+      if (word_pressed && text.toLowerCase().contains(hovered_word)) {
+        //if (text.toLowerCase().contains(hovered_word.toLowerCase())) {
+          state = 1;
+          scale_factor = 1.0;
+        //} else {
+          //state = 0;
+          //scale_factor = 0.4;
+        //}
       } else {
         state = 0;
         scale_factor = 0.4;
