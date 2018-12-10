@@ -5,7 +5,6 @@ class Tweet {
   // CONTENT
   processing.data.JSONObject status;
   String text;
-  String[] text_split_white;
   String timestamp;
   String name;
   String username;
@@ -107,6 +106,7 @@ class Tweet {
 
   float calculateMaxHeight() {
     float max_height;
+    float max_leading = font_size_max * 1.2;
     textSize(font_size_max);
     // cursor
     float cursor_x = position.x;
@@ -123,7 +123,7 @@ class Tweet {
       }
       cursor_x += token_w;
     }
-    max_height = (line+1)*leading;
+    max_height = (line+1)*max_leading;
     return max_height;
   }
 
@@ -190,7 +190,7 @@ class Tweet {
       pushMatrix();
       translate(position.x, position.y);
       rotate(theta);
-      shape(bird_shape, 0, 0, image_size, image_size);
+      shape(bird, 0, 0, image_size, image_size);
       calculateRot();
       popMatrix();
     } else {
@@ -198,6 +198,7 @@ class Tweet {
       w = para_width * scale_factor;
       h = para_height * scale_factor;
       font_size = font_size_max * scale_factor;
+      leading = font_size * 1.2;
       
       // set coordinates
       min_x = position.x;
@@ -374,10 +375,10 @@ class Tweet {
     //translate(position.x, position.y);
     //rotate(theta);
     //noStroke();
-    //fill(255, 0, 0, 10);
+    //fill(0, 0, 0, 10);
     //ellipse(0, 0, 5, 5);
     //noFill();
-    //stroke(255, 0, 0, 10);
+    //stroke(0, 0, 0, 10);
     //rect(0, 0, w, h);
     //popMatrix();
     //
@@ -400,11 +401,13 @@ class Tweet {
         // let mouse drag tweet
         if (featuring && featured_id == id) {
           state = 1;
-          h = leading;
+          //h = leading;
           //position.x = mouseX - anchor_x;
           //position.y = mouseY - anchor_y;
-          position.x = mouseX - w/2.0;
-          position.y = mouseY - h/2.0 - leading*1.5;
+          //position.x = mouseX - w/2.0;
+          //position.y = mouseY - h/2.0 - leading*1.5;
+          position.x = mouseX;
+          position.y = mouseY;
           //if (millis() > anim_start + anim_delay && font_size < font_size_max) {
           if (millis() > anim_start + anim_delay && scale_factor < 1.0) {
             //font_size += font_size_increment;
