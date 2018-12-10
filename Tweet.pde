@@ -232,12 +232,11 @@ class Tweet {
         String[] token_split = RiTa.tokenize(token);
         float token_w = textWidth(token);  // calculate text width of token
 
+        fill(c_text);
         for (String s : token_split) {
           for (String top_word : top_words) {
             if (s.toLowerCase().equals(top_word)) {  // check if token is contained in top words
               fill(c_top_word);
-            } else {
-              fill(c_text);
             }
           }
         }
@@ -417,11 +416,9 @@ class Tweet {
           position.y = mouseY;
           //if (millis() > anim_start + anim_delay && font_size < font_size_max) {
           if (millis() > anim_start + anim_delay && scale_factor < 1.0) {
-            //font_size += font_size_increment;
             scale_factor += scale_factor_increment;
             anim_start = millis();
           }
-          println(featuring, anim_start, millis(), scale_factor);
         }
       } else {
         state = 0;
