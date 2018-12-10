@@ -1,3 +1,15 @@
+/****
+
+An interactive visualisation of Tweets about climate change denial.
+
+Instructions:
+* Hover over birds to isolate them by changing their flocking behaviour.
+* Hold down on birds to show their full Tweet.
+* Hover over the a top word in the list to highlight Tweets containing that word.
+* Hold down on a top word in the list to show full Tweets containing that word.
+
+****/
+
 import rita.*;
 import java.util.*;
 import java.text.*;
