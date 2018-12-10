@@ -11,7 +11,6 @@ class Analyser {
 
   // WORDS
   int num_top_words = 10;
-  //String[] top_words = new String[num_top_words];
   String[] word_list;
   TopWord[] top_words;
 
@@ -19,7 +18,6 @@ class Analyser {
   float margin = 30.0; 
   float x, y;
   float list_padding = 20.0;
-  float font_size;
 
   Analyser() {
     texts = new String[statuses_array.size()];
@@ -61,7 +59,6 @@ class Analyser {
     textSize(font_size_max);
     text("TOP SECONDARY WORDS", x, y);
     for (int i = 0; i < top_words.length; i++) {
-      //text(top_words[i], x, y + (i+1)*list_padding);
       top_words[i].display();
     }
   }
