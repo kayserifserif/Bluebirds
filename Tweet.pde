@@ -18,8 +18,13 @@ class Tweet {
   float maxspeed_expand = 1.0;
   float maxspeed_flock = 3.0;
   float maxspeed = maxspeed_flock;
-  float expand_padding;
+
+  // ROTATION
   float theta;
+  PVector rot1, rot2, rot3;
+  PVector[] rot;
+  int[] rot_x, rot_y;
+  float min_x, max_x, min_y, max_y;
 
   // WEIGHTING
   float weight_sep_expand = 3.0;
@@ -52,13 +57,11 @@ class Tweet {
   int anim_delay = 5;
 
   // IMAGE
-  float image_size = 40.0;
-  float image_padding = 10.0;
+  float image_size = 30.0;
 
   // TEXT
   float leading = font_size_max*1.2;
   float para_width = 250.0;
-  float para_padding = 40.0;
   float font_size;
   float font_size_increment = 0.5;
 
@@ -88,6 +91,11 @@ class Tweet {
     position = new PVector(width/2, height/2);
     acceleration = new PVector(0, 0);
     velocity = PVector.random2D();
+
+    // rotation
+    rot = new PVector[4];
+    rot_x = new int[4];
+    rot_y = new int[4];
 
     // display
     state = 0;
@@ -128,6 +136,7 @@ class Tweet {
     // Limit speed
     velocity.limit(maxspeed);
     position.add(velocity);
+    rot[0] = position;
     // Reset accelertion to 0 each cycle
     acceleration.mult(0);
   }
@@ -147,17 +156,25 @@ class Tweet {
 
   void render() {
     if (state == 0) {
-      w = image_size;
-      h = image_size;
       theta = velocity.heading() + radians(90);
       pushMatrix();
       translate(position.x, position.y);
       rotate(theta);
       //shape(bird_shape, position.x, position.y, image_size, image_size);
       image(bird, 0, 0, image_size, image_size);
+      calculateRot();
       popMatrix();
     } else {
       w = para_width;
+
+      min_x = position.x;
+      max_x = position.x + w;
+      min_y = position.y;
+      max_y = position.y + h;
+      
+      calculateHeight();
+
+      drawBox();
 
       textSize(font_size);
       // set initial cursor to top left 
@@ -200,13 +217,57 @@ class Tweet {
       }
       h = (line+1)*leading;
     }
-      if (featuring && featured_id == id) {
-        noStroke();
-        fill(hue(c_featured), saturation(c_featured), brightness(c_featured), alpha_faded);
-        rect(position.x - focus_padding, position.y - focus_padding, w + focus_padding*2, h + focus_padding*2.2);
-        fill(hue(c_normal), saturation(c_normal), brightness(c_normal), alpha_faded);
-        text(name + " @" + username + " • " + timestamp, position.x, position.y - leading*1.5);
+  }
+
+  void calculateRot() {
+    rot1 = new PVector(modelX(image_size, 0, 0), 
+      modelY(image_size, 0, 0));
+    rot[1] = rot1;
+    rot2 = new PVector(modelX(0, image_size, 0), 
+      modelY(0, image_size, 0));
+    rot[2] = rot2;
+    rot3 = new PVector(modelX(image_size, image_size, 0), 
+      modelY(image_size, image_size, 0));
+    rot[3] = rot3;
+    for (int i = 0; i < 4; i++) {
+      rot_x[i] = int(rot[i].x);
+      rot_y[i] = int(rot[i].y);
+    }
+    min_x = min(rot_x);
+    max_x = max(rot_x);
+    min_y = min(rot_y);
+    max_y = max(rot_y);
+    w = max_x - min_x;
+    h = max_y - min_y;
+  }
+  
+  void calculateHeight() {
+    // cursor
+    float cursor_x = position.x;
+    // line counter for calculating height
+    int line = 0;
+    for (int i = 0; i < text_split.length; i++) {
+      String token = text_split[i];
+      float token_w = textWidth(token);
+      if (token.equals("\n") ||  // if token is new line
+        (cursor_x + token_w > position.x + w &&  // if word overflows
+        !token.equals(pattern_punc_white))) {  // except if punctuation or whitespace (keep attached to words) 
+        cursor_x = position.x;  // reset cursor x to left
+        line++;
       }
+      cursor_x += token_w;
+    }
+    h = (line+1)*leading;
+  }
+
+  void drawBox() {
+    if (featuring && featured_id == id) {
+      noStroke();
+      fill(hue(c_featured), saturation(c_featured), brightness(c_featured), alpha_faded);
+      rect(position.x - focus_padding, position.y - focus_padding, w + focus_padding*2, h + focus_padding*2.2);
+      fill(hue(c_normal), saturation(c_normal), brightness(c_normal), alpha_faded);
+      text(name + " @" + username + " • " + timestamp, position.x, position.y - leading*1.5);
+    }
   }
 
   // Wraparound
@@ -300,23 +361,8 @@ class Tweet {
   }
 
   void checkHover() {
-    if (state == 0) {
-      expand_padding = image_padding;
-    } else {
-      expand_padding = para_padding;
-    }
-    pushMatrix();
-    //// debug
-    noStroke();
-    fill(255, 0, 0, 10);
-    ellipse(position.x, position.y, 5, 5);
-    noFill();
-    stroke(0, 10);
-    rect(position.x, position.y, w, h);
-    rect(position.x - expand_padding, position.y - expand_padding, w + expand_padding * 2, h + expand_padding*2);
-    ////
-    if (mouseX > position.x - expand_padding && mouseX < position.x + w + expand_padding &&
-      mouseY > position.y - expand_padding && mouseY < position.y + h + expand_padding) {
+    if (mouseX > min_x - focus_padding && mouseX < max_x + focus_padding &&
+      mouseY > min_y - focus_padding && mouseY < max_y + focus_padding) {
       is_hovered = true;
       weight_sep = weight_sep_expand;
       weight_ali = weight_ali_expand;
@@ -329,14 +375,16 @@ class Tweet {
           featuring = true;  // activate
           featured_id = id;  // let only this tweet be dragged
           // create mouse anchor point in relation to top left corner
-          anchor_x = mouseX - position.x;
-          anchor_y = mouseY - position.y;
+          //anchor_x = mouseX - min_x;
+          //anchor_y = mouseY - min_y;
           anim_start = millis();
         }
         // let mouse drag tweet
         if (featuring && featured_id == id) {
-          position.x = mouseX - anchor_x;
-          position.y = mouseY - anchor_y;
+          //position.x = mouseX - anchor_x;
+          //position.y = mouseY - anchor_y;
+          position.x = mouseX;
+          position.y = mouseY;
         }
         if (millis() > anim_start + anim_delay && font_size < font_size_max) {
           font_size += font_size_increment;
@@ -362,6 +410,5 @@ class Tweet {
     if (!mousePressed) {
       featuring = false;
     }
-    popMatrix();
   }
 }
