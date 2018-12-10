@@ -75,14 +75,13 @@ class Analyser {
     if (mouseX > x && mouseX < x + w &&
       mouseY > y && mouseY < y + h) {
       analyser_hovered = true;
-      if (!mousePressed) {
-        word_pressed = false;
-      }
     } else {
       analyser_hovered = false;
+    }
+    if (!mousePressed) {
       word_pressed = false;
     }
-    
+
     // display words
     for (int i = 0; i < top_words.length; i++) {
       top_words[i].display();
