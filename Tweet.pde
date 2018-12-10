@@ -45,6 +45,7 @@ class Tweet {
   //from https://stackoverflow.com/questions/24222730/split-a-string-and-separate-by-punctuation-and-whitespace
   String pattern_punc_white = "[\\p{P}|\\s]";  // match punctuation and whitespace
   String[] text_split;
+  List text_split_list;
 
   // DISPLAY
   int state;  // 0 = bird, 1 = text
@@ -83,6 +84,7 @@ class Tweet {
     id = status.getInt("id");
     text = status.getString("text");
     text_split = text.split(pattern_split);
+    text_split_list = Arrays.asList(text_split);
     timestamp = status.getString("timestamp");
     name = status.getString("name");
     username = status.getString("username");
@@ -186,11 +188,20 @@ class Tweet {
 
   void render() {
     if (state == 0) {
+      // set rotation
       theta = velocity.heading() + radians(90);
+      // set color
+      if (analyser_hovered && text_split_list.contains(hovered_word)) {
+        bird.setFill(c_top_word);
+      } else {
+        bird.setFill(c_bluebird);
+      }
+      // draw shape
       pushMatrix();
       translate(position.x, position.y);
       rotate(theta);
       shape(bird, 0, 0, image_size, image_size);
+      // calculate rotation
       calculateRot();
       popMatrix();
     } else {

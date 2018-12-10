@@ -14,6 +14,7 @@ class TopWord {
   void display() {
     if (mouseX > x && mouseX < x + w &&
       mouseY > y - font_size_max && mouseY < y + h) {
+      hovered_word = word;
       fill(c_top_word);
     } else {
       fill(c_system);
