@@ -14,8 +14,8 @@ class Analyser {
   String[] top_words = new String[num_top_words];
 
   // DISPLAY
-  float padding = 30.0; 
-  PVector pos = new PVector(padding, padding);
+  float margin = 30.0; 
+  float x, y;
   float list_padding = 20.0;
   color c = color(0, 50);
   float font_size;
@@ -26,6 +26,8 @@ class Analyser {
       processing.data.JSONObject status = statuses_array.getJSONObject(i);
       texts[i] = status.getString("text");
     }
+    x = margin;
+    y = margin;
   }
 
   void generateTopWords() {
@@ -52,9 +54,9 @@ class Analyser {
   void displayTopWords() {
     fill(c);
     textSize(font_size_max);
-    text("TOP SECONDARY WORDS", pos.x, pos.y);
+    text("TOP SECONDARY WORDS", x, y);
     for (int i = 0; i < top_words.length; i++) {
-      text(top_words[i], pos.x, pos.y + (i+1)*list_padding);
+      text(top_words[i], x, y + (i+1)*list_padding);
     }
   }
 
