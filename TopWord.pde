@@ -16,6 +16,9 @@ class TopWord {
       mouseY > y - font_size_max && mouseY < y + h) {
       hovered_word = word;
       fill(c_top_word);
+      if (mousePressed) {
+        word_pressed = true;
+      }
     } else {
       fill(c_system);
     }

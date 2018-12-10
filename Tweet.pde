@@ -68,9 +68,9 @@ class Tweet {
 
   // HOVER
   float hover_padding = 25.0;
-  boolean is_hovered = false;
+  //boolean is_hovered = false;
   float alpha_faded = 50.0;
-  float alpha_hovered = 100.0;
+  //float alpha_hovered = 100.0;
 
   // FEATURE
   int id;
@@ -101,7 +101,7 @@ class Tweet {
 
     // display
     state = 0;
-    
+
     // text
     para_height = calculateMaxHeight();
   }
@@ -210,7 +210,7 @@ class Tweet {
       h = para_height * scale_factor;
       font_size = font_size_max * scale_factor;
       leading = font_size * 1.2;
-      
+
       // set coordinates
       min_x = position.x;
       max_x = position.x + w;
@@ -219,7 +219,7 @@ class Tweet {
 
       // draw background box
       drawBox();
-      
+
       // draw text
       textSize(font_size);
       // set initial cursor to top left 
@@ -231,16 +231,13 @@ class Tweet {
         String token = text_split[i];  // get current token (word/character)
         String[] token_split = RiTa.tokenize(token);
         float token_w = textWidth(token);  // calculate text width of token
-        // set fill to normal color with alpha dependent on focus status
-        if (is_hovered) fill(hue(c_text), saturation(c_text), brightness(c_text), alpha_hovered);
-        else fill(hue(c_text), saturation(c_text), brightness(c_text), alpha_faded);
-        
+
         for (String s : token_split) {
           for (String top_word : top_words) {
             if (s.toLowerCase().equals(top_word)) {  // check if token is contained in top words
-              // set fill to top word color with alpha dependent on focus status
-              if (is_hovered) fill(hue(c_top_word), saturation(c_top_word), brightness(c_top_word), alpha_hovered);
-              else fill(hue(c_top_word), saturation(c_top_word), brightness(c_top_word), alpha_faded);
+              fill(c_top_word);
+            } else {
+              fill(c_text);
             }
           }
         }
@@ -395,7 +392,6 @@ class Tweet {
     //
     if (mouseX > min_x - hover_padding && mouseX < max_x + hover_padding &&
       mouseY > min_y - hover_padding && mouseY < max_y + hover_padding) {
-      is_hovered = true;
       weight_sep = weight_sep_expand;
       weight_ali = weight_ali_expand;
       weight_coh = weight_coh_expand;
@@ -425,19 +421,24 @@ class Tweet {
             scale_factor += scale_factor_increment;
             anim_start = millis();
           }
+          println(featuring, anim_start, millis(), scale_factor);
         }
       } else {
         state = 0;
       }
     } else {
-      is_hovered = false;
-      state = 0;
-      //font_size = font_size_min;
-      scale_factor = 0.4;
+      //featuring = false;
       weight_sep = weight_sep_flock;
       weight_ali = weight_ali_flock;
       weight_coh = weight_coh_flock;
       maxspeed = maxspeed_flock;
+      if (text_split_list.contains(hovered_word) && word_pressed) {
+        state = 1;
+        scale_factor = 1.0;
+      } else {
+        state = 0;
+        scale_factor = 0.4;
+      }
     }
     // if mouse not pressed, turn featuring off
     if (!mousePressed) {
