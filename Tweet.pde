@@ -8,6 +8,7 @@ class Tweet {
   String timestamp;
   String name;
   String username;
+  String url;
 
   // MOTION
   PVector position;
@@ -84,6 +85,7 @@ class Tweet {
     timestamp = status.getString("timestamp");
     name = status.getString("name");
     username = status.getString("username");
+    url = status.getString("url");
 
     // motion
     position = new PVector(width/2, height/2);
@@ -407,6 +409,10 @@ class Tweet {
           if (millis() > anim_start + anim_delay && scale_factor < 1.0) {
             scale_factor += scale_factor_increment;
             anim_start = millis();
+          }
+          // open url
+          if (keyPressed && (key == ENTER || key == RETURN)) {
+            launch(url);
           }
         }
       } else {
