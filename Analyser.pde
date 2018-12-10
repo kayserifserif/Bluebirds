@@ -11,13 +11,14 @@ class Analyser {
 
   // WORDS
   int num_top_words = 10;
-  String[] top_words = new String[num_top_words];
+  //String[] top_words = new String[num_top_words];
+  String[] word_list;
+  TopWord[] top_words;
 
   // DISPLAY
   float margin = 30.0; 
   float x, y;
   float list_padding = 20.0;
-  color c = color(0, 50);
   float font_size;
 
   Analyser() {
@@ -26,6 +27,8 @@ class Analyser {
       processing.data.JSONObject status = statuses_array.getJSONObject(i);
       texts[i] = status.getString("text");
     }
+    word_list = new String[num_top_words];
+    top_words = new TopWord[num_top_words];
     x = margin;
     y = margin;
   }
@@ -47,20 +50,23 @@ class Analyser {
 
     // get top words
     for (int i = 0; i < num_top_words; i++) {
-      top_words[i] = iter.next();
+      String word = iter.next();
+      word_list[i] = word;
+      top_words[i] = new TopWord(word, x, y + (i+1)*list_padding);
     }
   }
 
   void displayTopWords() {
-    fill(c);
+    fill(c_system);
     textSize(font_size_max);
     text("TOP SECONDARY WORDS", x, y);
     for (int i = 0; i < top_words.length; i++) {
-      text(top_words[i], x, y + (i+1)*list_padding);
+      //text(top_words[i], x, y + (i+1)*list_padding);
+      top_words[i].display();
     }
   }
 
-  String[] getTopWords() {
-    return top_words;
+  String[] getWordList() {
+    return word_list;
   }
 }
