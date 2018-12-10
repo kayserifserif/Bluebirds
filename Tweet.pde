@@ -62,8 +62,11 @@ class Tweet {
   // TEXT
   float leading = font_size_max*1.2;
   float para_width = 250.0;
+  float para_height;
   float font_size;
   float font_size_increment = 0.5;
+  float scale_factor = 1.0;
+  float scale_factor_increment = 0.05;
 
   // FOCUS
   float focus_padding = 10.0;
@@ -99,6 +102,31 @@ class Tweet {
 
     // display
     state = 0;
+    
+    // text
+    para_height = calculateMaxHeight();
+  }
+
+  float calculateMaxHeight() {
+    float max_height;
+    textSize(font_size_max);
+    // cursor
+    float cursor_x = position.x;
+    // line counter for calculating height
+    int line = 0;
+    for (int i = 0; i < text_split.length; i++) {
+      String token = text_split[i];
+      float token_w = textWidth(token);
+      if (token.equals("\n") ||  // if token is new line
+        (cursor_x + token_w > position.x + para_width &&  // if word overflows
+        !token.equals(pattern_punc_white))) {  // except if punctuation or whitespace (keep attached to words) 
+        cursor_x = position.x;  // reset cursor x to left
+        line++;
+      }
+      cursor_x += token_w;
+    }
+    max_height = (line+1)*leading;
+    return max_height;
   }
 
   void run(ArrayList<Tweet> tweets) {
@@ -169,16 +197,21 @@ class Tweet {
       calculateRot();
       popMatrix();
     } else {
-      w = para_width;
-      calculateHeight();
+      // set sizes
+      w = para_width * scale_factor;
+      h = para_height * scale_factor;
+      font_size = font_size_max * scale_factor;
       
+      // set coordinates
       min_x = position.x;
       max_x = position.x + w;
       min_y = position.y;
       max_y = position.y + h;
 
+      // draw background box
       drawBox();
-
+      
+      // draw text
       textSize(font_size);
       // set initial cursor to top left 
       float cursor_x = position.x;
@@ -190,20 +223,15 @@ class Tweet {
         String[] token_split = RiTa.tokenize(token);
         float token_w = textWidth(token);  // calculate text width of token
         // set fill to normal color with alpha dependent on focus status
-        if (is_hovered) {
-          fill(hue(c_normal), saturation(c_normal), brightness(c_normal), alpha_hovered);
-        } else {
-          fill(hue(c_normal), saturation(c_normal), brightness(c_normal), alpha_faded);
-        }
+        if (is_hovered) fill(hue(c_normal), saturation(c_normal), brightness(c_normal), alpha_hovered);
+        else fill(hue(c_normal), saturation(c_normal), brightness(c_normal), alpha_faded);
+        
         for (String s : token_split) {
           for (String top_word : top_words) {
             if (s.toLowerCase().equals(top_word)) {  // check if token is contained in top words
               // set fill to top word color with alpha dependent on focus status
-              if (is_hovered) {
-                fill(hue(c_top_word), saturation(c_top_word), brightness(c_top_word), alpha_hovered);
-              } else {
-                fill(hue(c_top_word), saturation(c_top_word), brightness(c_top_word), alpha_faded);
-              }
+              if (is_hovered) fill(hue(c_top_word), saturation(c_top_word), brightness(c_top_word), alpha_hovered);
+              else fill(hue(c_top_word), saturation(c_top_word), brightness(c_top_word), alpha_faded);
             }
           }
         }
@@ -218,7 +246,6 @@ class Tweet {
         text(token, cursor_x, cursor_y);
         cursor_x += token_w;
       }
-      h = (line+1)*leading;
     }
   }
 
@@ -242,25 +269,6 @@ class Tweet {
     max_y = max(rot_y);
     w = max_x - min_x;
     h = max_y - min_y;
-  }
-
-  void calculateHeight() {
-    // cursor
-    float cursor_x = position.x;
-    // line counter for calculating height
-    int line = 0;
-    for (int i = 0; i < text_split.length; i++) {
-      String token = text_split[i];
-      float token_w = textWidth(token);
-      if (token.equals("\n") ||  // if token is new line
-        (cursor_x + token_w > position.x + w &&  // if word overflows
-        !token.equals(pattern_punc_white))) {  // except if punctuation or whitespace (keep attached to words) 
-        cursor_x = position.x;  // reset cursor x to left
-        line++;
-      }
-      cursor_x += token_w;
-    }
-    h = (line+1)*leading;
   }
 
   void drawBox() {
@@ -388,8 +396,10 @@ class Tweet {
           //position.y = mouseY - anchor_y;
           position.x = mouseX - w/2.0;
           position.y = mouseY - h/2.0 - leading*1.5;
-          if (millis() > anim_start + anim_delay && font_size < font_size_max) {
-            font_size += font_size_increment;
+          //if (millis() > anim_start + anim_delay && font_size < font_size_max) {
+          if (millis() > anim_start + anim_delay && scale_factor < 1.0) {
+            //font_size += font_size_increment;
+            scale_factor += scale_factor_increment;
             anim_start = millis();
           }
         }
@@ -399,7 +409,8 @@ class Tweet {
     } else {
       is_hovered = false;
       state = 0;
-      font_size = font_size_min;
+      //font_size = font_size_min;
+      scale_factor = 0.4;
       weight_sep = weight_sep_flock;
       weight_ali = weight_ali_flock;
       weight_coh = weight_coh_flock;
