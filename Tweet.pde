@@ -390,7 +390,8 @@ class Tweet {
     //popMatrix();
     //
     if (mouseX > min_x - hover_padding && mouseX < max_x + hover_padding &&
-      mouseY > min_y - hover_padding && mouseY < max_y + hover_padding) {
+      mouseY > min_y - hover_padding && mouseY < max_y + hover_padding &&
+      !analyser_hovered) {
       weight_sep = weight_sep_expand;
       weight_ali = weight_ali_expand;
       weight_coh = weight_coh_expand;
