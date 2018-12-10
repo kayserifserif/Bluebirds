@@ -30,10 +30,10 @@ class Tweet {
   float weight_sep_expand = 3.0;
   float weight_sep_flock = 1.5;
   float weight_sep = weight_sep_flock;
-  float weight_ali_expand = 0.5;
+  float weight_ali_expand = 0.1;
   float weight_ali_flock = 1.5;
   float weight_ali = weight_ali_flock;
-  float weight_coh_expand = 0.5;
+  float weight_coh_expand = 0.1;
   float weight_coh_flock = 1.5;
   float weight_coh = weight_coh_flock;
 
@@ -68,16 +68,17 @@ class Tweet {
   float scale_factor = 1.0;
   float scale_factor_increment = 0.05;
 
-  // FOCUS
-  float focus_padding = 10.0;
+  // HOVER
+  float hover_padding = 25.0;
   boolean is_hovered = false;
   float alpha_faded = 50.0;
   float alpha_hovered = 100.0;
 
   // FEATURE
   int id;
-  float anchor_x;
-  float anchor_y;
+  //float anchor_x;
+  //float anchor_y;
+  float feature_padding = 10.0;
   color c_featured = color(180, 10, 100);
 
   Tweet(processing.data.JSONObject status) {
@@ -275,7 +276,7 @@ class Tweet {
     if (featuring && featured_id == id) {
       noStroke();
       fill(hue(c_featured), saturation(c_featured), brightness(c_featured), alpha_faded);
-      rect(position.x - focus_padding, position.y - focus_padding, w + focus_padding*2, h + focus_padding*2.2);
+      rect(position.x - feature_padding, position.y - feature_padding, w + feature_padding*2, h + feature_padding*2.2);
       fill(hue(c_normal), saturation(c_normal), brightness(c_normal), alpha_faded);
       text(name + " @" + username + " • " + timestamp, position.x, position.y - leading*1.5);
     }
@@ -372,8 +373,8 @@ class Tweet {
   }
 
   void checkHover() {
-    if (mouseX > min_x - focus_padding && mouseX < max_x + focus_padding &&
-      mouseY > min_y - focus_padding && mouseY < max_y + focus_padding) {
+    if (mouseX > min_x - hover_padding && mouseX < max_x + hover_padding &&
+      mouseY > min_y - hover_padding && mouseY < max_y + hover_padding) {
       is_hovered = true;
       weight_sep = weight_sep_expand;
       weight_ali = weight_ali_expand;
