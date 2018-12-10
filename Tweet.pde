@@ -46,8 +46,6 @@ class Tweet {
   //from https://stackoverflow.com/questions/24222730/split-a-string-and-separate-by-punctuation-and-whitespace
   String pattern_punc_white = "[\\p{P}|\\s]";  // match punctuation and whitespace
   String[] text_split;
-  color c_normal = color(0, 0, 0);
-  color c_top_word = color(0, 80, 80);
 
   // DISPLAY
   int state;  // 0 = bird, 1 = text
@@ -79,7 +77,6 @@ class Tweet {
   //float anchor_x;
   //float anchor_y;
   float feature_padding = 10.0;
-  color c_featured = color(180, 10, 100);
 
   Tweet(processing.data.JSONObject status) {
     // content
@@ -193,8 +190,7 @@ class Tweet {
       pushMatrix();
       translate(position.x, position.y);
       rotate(theta);
-      //shape(bird_shape, position.x, position.y, image_size, image_size);
-      image(bird, 0, 0, image_size, image_size);
+      shape(bird_shape, 0, 0, image_size, image_size);
       calculateRot();
       popMatrix();
     } else {
@@ -224,8 +220,8 @@ class Tweet {
         String[] token_split = RiTa.tokenize(token);
         float token_w = textWidth(token);  // calculate text width of token
         // set fill to normal color with alpha dependent on focus status
-        if (is_hovered) fill(hue(c_normal), saturation(c_normal), brightness(c_normal), alpha_hovered);
-        else fill(hue(c_normal), saturation(c_normal), brightness(c_normal), alpha_faded);
+        if (is_hovered) fill(hue(c_text), saturation(c_text), brightness(c_text), alpha_hovered);
+        else fill(hue(c_text), saturation(c_text), brightness(c_text), alpha_faded);
         
         for (String s : token_split) {
           for (String top_word : top_words) {
@@ -277,7 +273,7 @@ class Tweet {
       noStroke();
       fill(hue(c_featured), saturation(c_featured), brightness(c_featured), alpha_faded);
       rect(position.x - feature_padding, position.y - feature_padding, w + feature_padding*2, h + feature_padding*2.2);
-      fill(hue(c_normal), saturation(c_normal), brightness(c_normal), alpha_faded);
+      fill(hue(c_text), saturation(c_text), brightness(c_text), alpha_faded);
       text(name + " @" + username + " • " + timestamp, position.x, position.y - leading*1.5);
     }
   }
@@ -373,6 +369,18 @@ class Tweet {
   }
 
   void checkHover() {
+    //// debug
+    //pushMatrix();
+    //translate(position.x, position.y);
+    //rotate(theta);
+    //noStroke();
+    //fill(255, 0, 0, 10);
+    //ellipse(0, 0, 5, 5);
+    //noFill();
+    //stroke(255, 0, 0, 10);
+    //rect(0, 0, w, h);
+    //popMatrix();
+    //
     if (mouseX > min_x - hover_padding && mouseX < max_x + hover_padding &&
       mouseY > min_y - hover_padding && mouseY < max_y + hover_padding) {
       is_hovered = true;
