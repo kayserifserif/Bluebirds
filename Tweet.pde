@@ -68,14 +68,10 @@ class Tweet {
 
   // HOVER
   float hover_padding = 25.0;
-  //boolean is_hovered = false;
   float alpha_faded = 50.0;
-  //float alpha_hovered = 100.0;
 
   // FEATURE
   int id;
-  //float anchor_x;
-  //float anchor_y;
   float feature_padding = 10.0;
 
   Tweet(processing.data.JSONObject status) {
@@ -400,22 +396,14 @@ class Tweet {
         if (!featuring) {
           featuring = true;  // activate
           featured_id = id;  // let only this tweet be dragged
-          // create mouse anchor point in relation to top left corner
-          //anchor_x = mouseX - position.x;
-          //anchor_y = mouseY - position.y;
-          anim_start = millis();
+          anim_start = millis();  // start timer for animation
         }
         // let mouse drag tweet
         if (featuring && featured_id == id) {
           state = 1;
-          //h = leading;
-          //position.x = mouseX - anchor_x;
-          //position.y = mouseY - anchor_y;
-          //position.x = mouseX - w/2.0;
-          //position.y = mouseY - h/2.0 - leading*1.5;
           position.x = mouseX;
           position.y = mouseY;
-          //if (millis() > anim_start + anim_delay && font_size < font_size_max) {
+          // animate growing text
           if (millis() > anim_start + anim_delay && scale_factor < 1.0) {
             scale_factor += scale_factor_increment;
             anim_start = millis();
@@ -425,11 +413,12 @@ class Tweet {
         state = 0;
       }
     } else {
-      //featuring = false;
       weight_sep = weight_sep_flock;
       weight_ali = weight_ali_flock;
       weight_coh = weight_coh_flock;
       maxspeed = maxspeed_flock;
+      
+      // show all tweets containing pressed word
       if (word_pressed && text.toLowerCase().contains(hovered_word)) {
         state = 1;
         scale_factor = 1.0;
@@ -438,6 +427,7 @@ class Tweet {
         scale_factor = 0.4;
       }
     }
+    
     // if mouse not pressed, turn featuring off
     if (!mousePressed) {
       featuring = false;
