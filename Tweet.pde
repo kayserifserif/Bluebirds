@@ -131,6 +131,10 @@ class Tweet {
 
   // Method to update position
   void update() {
+    // give random velocity after release
+    if (velocity.mag() == 0) {
+      velocity = PVector.random2D();
+    }
     // Update velocity
     velocity.add(acceleration);
     // Limit speed
@@ -166,13 +170,12 @@ class Tweet {
       popMatrix();
     } else {
       w = para_width;
-
+      calculateHeight();
+      
       min_x = position.x;
       max_x = position.x + w;
       min_y = position.y;
       max_y = position.y + h;
-      
-      calculateHeight();
 
       drawBox();
 
@@ -240,7 +243,7 @@ class Tweet {
     w = max_x - min_x;
     h = max_y - min_y;
   }
-  
+
   void calculateHeight() {
     // cursor
     float cursor_x = position.x;
@@ -369,33 +372,29 @@ class Tweet {
       weight_coh = weight_coh_expand;
       maxspeed = maxspeed_expand;
       if (mousePressed) {
-        state = 1;
-        h = leading;
         if (!featuring) {
           featuring = true;  // activate
           featured_id = id;  // let only this tweet be dragged
           // create mouse anchor point in relation to top left corner
-          //anchor_x = mouseX - min_x;
-          //anchor_y = mouseY - min_y;
+          //anchor_x = mouseX - position.x;
+          //anchor_y = mouseY - position.y;
           anim_start = millis();
         }
         // let mouse drag tweet
         if (featuring && featured_id == id) {
+          state = 1;
+          h = leading;
           //position.x = mouseX - anchor_x;
           //position.y = mouseY - anchor_y;
-          position.x = mouseX;
-          position.y = mouseY;
-        }
-        if (millis() > anim_start + anim_delay && font_size < font_size_max) {
-          font_size += font_size_increment;
-          anim_start = millis();
+          position.x = mouseX - w/2.0;
+          position.y = mouseY - h/2.0 - leading*1.5;
+          if (millis() > anim_start + anim_delay && font_size < font_size_max) {
+            font_size += font_size_increment;
+            anim_start = millis();
+          }
         }
       } else {
         state = 0;
-        // give random velocity after release
-        if (velocity.mag() == 0) {
-          velocity = PVector.random2D();
-        }
       }
     } else {
       is_hovered = false;
