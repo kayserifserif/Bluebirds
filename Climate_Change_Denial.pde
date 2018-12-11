@@ -132,7 +132,6 @@ void createTweets() {
     println(e);
   }
   List<Status> statuses_list = query_result.getTweets();
-  //println(statuses_list);
   statuses = statuses_list.toArray(new Status[tweet_count]);  // http://javadevnotes.com/java-list-to-array-examples/
   statuses_array = new processing.data.JSONArray();
 
@@ -140,19 +139,27 @@ void createTweets() {
   for (int i = 0; i < statuses.length; i++) {
     Status status_old = statuses[i];
     if (status_old != null) {
+      
+      // get text of status
       String text = status_old.getText();
       text = text.replaceAll("(@\\w+ ){2,}(?=@)", "@… ");  // trim @ replies if more than two
 
+      // get date
       Date date = status_old.getCreatedAt();
       String timestamp = formatter.format(date);
-
+      
+      // get user name and screen name
       User user = status_old.getUser();
       String name = user.getName().trim();
       String username = user.getScreenName().trim();
 
+      // get id to keep track of individual tweets
       long id = status_old.getId();
+      
+      // get url
       String url = "https://twitter.com/" + username + "/status/" + id;
-
+      
+      // add content to a new JSON object
       processing.data.JSONObject status_new = new processing.data.JSONObject();
       status_new.setInt("id", i);
       status_new.setString("text", text);
@@ -160,7 +167,8 @@ void createTweets() {
       status_new.setString("name", name);
       status_new.setString("username", username);
       status_new.setString("url", url);
-
+      
+      // add the new JSON object to the array
       statuses_array.setJSONObject(i, status_new);
     }
   }

@@ -25,6 +25,7 @@ class Analyser {
     texts = new String[statuses_array.size()];
     for (int i = 0; i < statuses_array.size(); i++) {
       processing.data.JSONObject status = statuses_array.getJSONObject(i);
+      // get the text of each status and add it to the array
       texts[i] = status.getString("text");
     }
     word_list = new String[num_top_words];
@@ -53,11 +54,14 @@ class Analyser {
     // get top words
     for (int i = 0; i < num_top_words; i++) {
       String word = iter.next();
+      // add word string to an array
       word_list[i] = word;
+      // create a TopWord object and add it to an array
       top_words[i] = new TopWord(word, x, y + (i+1)*list_padding);
     }
 
     w = 0.0;
+    // find the maximum width of any top word
     for (String word : word_list) {
       if (textWidth(word) > w) {
         w = textWidth(word);
