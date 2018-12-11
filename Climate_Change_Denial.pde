@@ -62,10 +62,6 @@ boolean featuring = false;
 color c_system, c_text, c_top_word, c_featured;
 color c_bluebird;
 
-// ZOOM
-float zoom;
-float scroll;
-
 void setup() {
   // settings
   size(1280, 720, P3D);
@@ -80,9 +76,6 @@ void setup() {
   
   // text
   formatter = new SimpleDateFormat("MMM dd yyyy");
-  
-  //zoom
-  //zoom = height/2.0;
 
   // create tweets
   createTweets();
@@ -175,18 +168,6 @@ void createTweets() {
 
 void draw() {
   background(0, 0, 100);
-  //camera(width/2.0, height/2.0, zoom / tan(PI*30.0 / 180.0), width/2.0, height/2.0, 0, 0, 1, 0);
   flock.run();
   analyser.displayTopWords();
 }
-
-//void mouseWheel(MouseEvent event) {
-//  scroll = event.getCount();
-//  zoom += scroll;
-//  if (zoom > height/2.0) {
-//    zoom = height/2.0;
-//  } else if (zoom < 120.0) {
-//    zoom = 120.0;
-//  }
-//  println(zoom);
-//}
