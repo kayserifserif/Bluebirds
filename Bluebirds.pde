@@ -1,14 +1,15 @@
 /****
 
-An interactive visualisation of Tweets about climate change denial.
-
-Instructions:
-* Hover over birds to isolate them by changing their flocking behaviour.
-* Hold down on birds to show their full Tweet.
-* Press enter while holding down on a Tweet to launch the URL.
-* Hover over the a top word in the list to highlight Tweets containing that word.
-* Hold down on a top word in the list to show full Tweets containing that word.
-
+ "Bluebirds" by Katherine Yang
+ An interactive visualisation of Tweets about climate change denial.
+ 
+ Instructions:
+ * Hover over birds to isolate them by changing their flocking behaviour.
+ * Hold down on birds to show their full Tweet.
+ * Press enter while holding down on a Tweet to launch the URL.
+ * Hover over the a top word in the list to highlight birds containing that word.
+ * Hold down on a top word in the list to show full Tweets containing that word.
+ 
 ****/
 
 import rita.*;
@@ -67,14 +68,14 @@ void setup() {
   // settings
   size(1280, 720, P3D);
   colorMode(HSB, 360, 100, 100, 100);
-  
+
   // color
   c_system = color(0, 0, 0, 50);
   c_text = color(0, 0, 0);
   c_top_word = color(0, 80, 80);
   c_featured = color(180, 10, 100, 50.0);
   c_bluebird = color(202.8, 88, 94.9);
-  
+
   // text
   formatter = new SimpleDateFormat("MMM dd yyyy");
 
@@ -110,7 +111,7 @@ void createTweets() {
   consumer_secret = split(properties[1], "=")[1];
   access_token = split(properties[2], "=")[1];
   access_secret = split(properties[3], "=")[1];
-  
+
   // configuration
   // http://twitter4j.org/en/configuration.html
   cb = new ConfigurationBuilder();
@@ -140,7 +141,7 @@ void createTweets() {
   for (int i = 0; i < statuses.length; i++) {
     Status status_old = statuses[i];
     if (status_old != null) {
-      
+
       // get text of status
       String text = status_old.getText();
       text = text.replaceAll("(@\\w+ ){2,}(?=@)", "@… ");  // trim @ replies if more than two
@@ -148,7 +149,7 @@ void createTweets() {
       // get date
       Date date = status_old.getCreatedAt();
       String timestamp = formatter.format(date);
-      
+
       // get user name and screen name
       User user = status_old.getUser();
       String name = user.getName().trim();
@@ -156,10 +157,10 @@ void createTweets() {
 
       // get id to keep track of individual tweets
       long id = status_old.getId();
-      
+
       // get url
       String url = "https://twitter.com/" + username + "/status/" + id;
-      
+
       // add content to a new JSON object
       processing.data.JSONObject status_new = new processing.data.JSONObject();
       status_new.setInt("id", i);
@@ -168,7 +169,7 @@ void createTweets() {
       status_new.setString("name", name);
       status_new.setString("username", username);
       status_new.setString("url", url);
-      
+
       // add the new JSON object to the array
       statuses_array.setJSONObject(i, status_new);
     }
