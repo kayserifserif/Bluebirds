@@ -75,6 +75,27 @@ void setup() {
   size(1280, 720, P3D);
   colorMode(HSB, 360, 100, 100, 100);
   
+  // import authentication keys
+  String[] properties = loadStrings("twitter4j.properties");
+  consumer_key = split(properties[0], "=")[1];
+  consumer_secret = split(properties[1], "=")[1];
+  access_token = split(properties[2], "=")[1];
+  access_secret = split(properties[3], "=")[1];
+
+  // configuration
+  // http://twitter4j.org/en/configuration.html
+  cb = new ConfigurationBuilder();
+  cb.setOAuthAccessToken(access_token)
+    .setOAuthAccessTokenSecret(access_secret)
+    .setOAuthConsumerKey(consumer_key)
+    .setOAuthConsumerSecret(consumer_secret)
+    .setDebugEnabled(true)
+    .setTweetModeExtended(true);  // https://groups.google.com/forum/#!topic/twitter4j/5OtmkR8ap7I
+
+  // set up Twitter
+  TwitterFactory tf = new TwitterFactory(cb.build());
+  twitter = tf.getInstance();
+  
   // interface
   try { 
     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -137,26 +158,6 @@ void generate() {
 }
 
 void createTweets() {
-  // import authentication keys
-  String[] properties = loadStrings("twitter4j.properties");
-  consumer_key = split(properties[0], "=")[1];
-  consumer_secret = split(properties[1], "=")[1];
-  access_token = split(properties[2], "=")[1];
-  access_secret = split(properties[3], "=")[1];
-
-  // configuration
-  // http://twitter4j.org/en/configuration.html
-  cb = new ConfigurationBuilder();
-  cb.setOAuthAccessToken(access_token)
-    .setOAuthAccessTokenSecret(access_secret)
-    .setOAuthConsumerKey(consumer_key)
-    .setOAuthConsumerSecret(consumer_secret)
-    .setDebugEnabled(true)
-    .setTweetModeExtended(true);  // https://groups.google.com/forum/#!topic/twitter4j/5OtmkR8ap7I
-
-  // set up Twitter
-  TwitterFactory tf = new TwitterFactory(cb.build());
-  twitter = tf.getInstance();
   query = new Query(full_query);
   query.setCount(tweet_count);
   try {
