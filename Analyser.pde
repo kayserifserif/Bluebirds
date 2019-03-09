@@ -5,7 +5,7 @@ class Analyser {
 
   // ANALYSIS
   ArrayList<String> workingList;
-  String[] hypertext = {"rt", "//t", "https", "co", "…"};
+  String[] hypertext = {"rt", "//t", "https", "co", "…", "via"};
   String[] wordsToIgnore;
 
   // WORDS
