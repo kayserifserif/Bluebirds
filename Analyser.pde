@@ -4,10 +4,9 @@ class Analyser {
   String[] texts;
 
   // ANALYSIS
-  String[] wordsToIgnore = {"rt", "//t", "https", "co", 
-    "climate", "change", "global", "warming", 
-    //"hoax", "conspiracy", "scam", "fake", "concept",
-    "…"};
+  ArrayList<String> workingList;
+  String[] hypertext = {"rt", "//t", "https", "co", "…"};
+  String[] wordsToIgnore;
 
   // WORDS
   int num_top_words = 10;
@@ -15,8 +14,8 @@ class Analyser {
   TopWord[] top_words;
 
   // DISPLAY
-  float margin = 30.0; 
-  float x, y;
+  float x = 30.0;
+  float y = 80.0;
   float w, h;
   float list_padding = 20.0;
 
@@ -30,10 +29,18 @@ class Analyser {
     }
     word_list = new String[num_top_words];
     top_words = new TopWord[num_top_words];
-
-    // display
-    x = margin;
-    y = margin;
+    
+    // words to ignore
+    workingList = new ArrayList();
+    for (int i = 0; i < hypertext.length; i++) {
+      workingList.add(hypertext[i]);
+    }
+    String[] query_words = RiTa.tokenize(search_query);
+    for (int i = 0; i < query_words.length; i++) {
+      println(query_words[i]);
+      workingList.add(query_words[i]);
+    }
+    wordsToIgnore = workingList.toArray(new String[workingList.size()]);
   }
 
   void generateTopWords() {

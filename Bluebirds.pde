@@ -1,7 +1,7 @@
 /****
 
  "Bluebirds" by Katherine Yang
- An interactive visualisation of Tweets about climate change denial.
+ A Twitter interface/visualisation based on Daniel Shiffman's flocking algorithm.
  
  Instructions:
  * Hover over birds to isolate them by changing their flocking behaviour.
@@ -15,11 +15,17 @@
 import rita.*;
 import java.util.*;
 import java.text.*;
+import javax.swing.*;
+import controlP5.*;
+
+// INTERFACE
+ControlP5 cp5;
 
 // SEARCH
-String search_query = "(climate OR 'global warming')" +
-  "(hoax OR conspiracy OR scam OR fake OR concept)" +
-  "-is:retweet -'RT'";
+String default_query = "(climate OR 'global warming')" +
+  "(hoax OR conspiracy OR scam OR fake OR concept)";
+String search_query = "";
+String full_query = "";
 int tweet_count = 100;
 
 // AUTHENTICATION
@@ -68,6 +74,20 @@ void setup() {
   // settings
   size(1280, 720, P3D);
   colorMode(HSB, 360, 100, 100, 100);
+  
+  // interface
+  try { 
+    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+  } 
+  catch (Exception e) { 
+    e.printStackTrace();
+  }
+  cp5 = new ControlP5(this);
+  cp5.addButton("reset")
+     //.setValue(0)
+     .setPosition(30, 30)
+     .setSize(100, 20)
+     ;
 
   // color
   c_system = color(0, 0, 0, 50);
@@ -76,8 +96,27 @@ void setup() {
   c_featured = color(180, 10, 100, 50.0);
   c_bluebird = color(202.8, 88, 94.9);
 
+  // set image
+  bird = loadShape("Twitter_Logo_Blue.svg");
+
   // text
   formatter = new SimpleDateFormat("MMM dd yyyy");
+
+  // set typography
+  font = createFont("data/LibreFranklin-Regular.ttf", font_size_max);
+  textFont(font);
+  
+  generate();
+}
+
+void generate() {
+  // get query
+  // from https://stackoverflow.com/a/17654870
+  search_query = JOptionPane.showInputDialog(frame, "Enter search query.", default_query);
+  if (search_query == null) {
+    search_query = default_query;
+  }
+  full_query = search_query + " -is:retweet -'RT'";
 
   // create tweets
   createTweets();
@@ -95,13 +134,6 @@ void setup() {
     tweets_array[i] = new Tweet(status);
     flock.addTweet(tweets_array[i]);
   }
-
-  // set image
-  bird = loadShape("Twitter_Logo_Blue.svg");
-
-  // set typography
-  font = createFont("data/LibreFranklin-Regular.ttf", font_size_max);
-  textFont(font);
 }
 
 void createTweets() {
@@ -125,7 +157,7 @@ void createTweets() {
   // set up Twitter
   TwitterFactory tf = new TwitterFactory(cb.build());
   twitter = tf.getInstance();
-  query = new Query(search_query);
+  query = new Query(full_query);
   query.setCount(tweet_count);
   try {
     query_result = twitter.search(query);
@@ -174,6 +206,10 @@ void createTweets() {
       statuses_array.setJSONObject(i, status_new);
     }
   }
+}
+
+void reset() {
+  generate();
 }
 
 void draw() {
