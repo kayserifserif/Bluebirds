@@ -218,3 +218,10 @@ void draw() {
   flock.run();
   analyser.displayTopWords();
 }
+
+// launch url
+void keyPressed() {
+  if (featuring && (key == ENTER || key == RETURN)) {
+    launch(tweets_array[featured_id].url);
+  }
+}

@@ -419,10 +419,6 @@ class Tweet {
             scale_factor += scale_factor_increment;
             anim_start = millis();
           }
-          // open url
-          if (keyPressed && (key == ENTER || key == RETURN)) {
-            launch(url);
-          }
         }
       } else {
         state = 0;
