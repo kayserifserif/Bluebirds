@@ -15,17 +15,17 @@
 import rita.*;
 import java.util.*;
 import java.text.*;
-import javax.swing.*;
 import controlP5.*;
 
 // INTERFACE
 ControlP5 cp5;
+Textfield input;
+Bang enter;
 
 // SEARCH
 String default_query = "(climate OR 'global warming')" +
   "(hoax OR conspiracy OR scam OR fake OR concept)";
 String search_query = "";
-String full_query = "";
 int tweet_count = 100;
 
 // AUTHENTICATION
@@ -58,6 +58,7 @@ PShape bird;
 
 // TEXT
 PFont font;
+ControlFont cp5font;
 float font_size_max = 12.0;
 float font_size_min = 5.0;
 SimpleDateFormat formatter;
@@ -95,20 +96,6 @@ void setup() {
   // set up Twitter
   TwitterFactory tf = new TwitterFactory(cb.build());
   twitter = tf.getInstance();
-  
-  // interface
-  try { 
-    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-  } 
-  catch (Exception e) { 
-    e.printStackTrace();
-  }
-  cp5 = new ControlP5(this);
-  cp5.addButton("reset")
-     //.setValue(0)
-     .setPosition(30, 30)
-     .setSize(100, 20)
-     ;
 
   // color
   c_system = color(0, 0, 0, 50);
@@ -125,20 +112,25 @@ void setup() {
 
   // set typography
   font = createFont("data/LibreFranklin-Regular.ttf", font_size_max);
+  cp5font = new ControlFont(font, int(font_size_max));
   textFont(font);
   
-  generate();
+  // interface
+  cp5 = new ControlP5(this);
+  input = cp5.addTextfield("input")
+             .setPosition(30, 30)
+             .setSize(100, 20)
+             .setFont(cp5font)
+             .setFocus(true)
+             ;
+  enter = cp5.addBang("enter")
+             .setPosition(140, 30)
+             .setSize(20, 20)
+             .setFont(cp5font)
+             ;
 }
 
 void generate() {
-  // get query
-  // from https://stackoverflow.com/a/17654870
-  search_query = JOptionPane.showInputDialog(frame, "Enter search query.", default_query);
-  if (search_query == null) {
-    search_query = default_query;
-  }
-  full_query = search_query + " -is:retweet -'RT'";
-
   // create tweets
   createTweets();
 
@@ -158,7 +150,7 @@ void generate() {
 }
 
 void createTweets() {
-  query = new Query(full_query);
+  query = new Query(search_query);
   query.setCount(tweet_count);
   try {
     query_result = twitter.search(query);
@@ -209,14 +201,21 @@ void createTweets() {
   }
 }
 
-void reset() {
+void draw() {
+  background(0, 0, 100);
+  if (search_query != "") {
+    flock.run();
+    analyser.displayTopWords();
+  }
+}
+
+void enter() {
   generate();
 }
 
-void draw() {
-  background(0, 0, 100);
-  flock.run();
-  analyser.displayTopWords();
+void input(String text) {
+  search_query = text + " -is:retweet -'RT'";
+  generate();
 }
 
 // launch url
