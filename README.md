@@ -24,13 +24,12 @@ A Twitter interface/visualisation based on Daniel Shiffman's flocking algorithm.
 
 ## Usage
 
-* When prompted, enter a search query to show 100 Tweets from the past 30 days.
+* Enter a search query to show 100 Tweets from the past 30 days.
 * Hover over birds to isolate them by changing their flocking behaviour.
 * Hold down on birds to show their full Tweet.
 * Press enter while holding down on a Tweet to launch the URL.
 * Hover over the a top word in the list to highlight birds containing that word.
 * Hold down on a top word in the list to show full Tweets containing that word.
-* Click Reset to search a new query.
 
 ## Inspiration
 
