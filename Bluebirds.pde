@@ -59,8 +59,7 @@ PShape bird;
 // TEXT
 PFont font;
 ControlFont cp5font;
-float font_size_max = 12.0;
-float font_size_min = 5.0;
+float font_size = 12.0;
 SimpleDateFormat formatter;
 
 // FEATURE
@@ -111,8 +110,8 @@ void setup() {
   formatter = new SimpleDateFormat("MMM dd yyyy");
 
   // set typography
-  font = createFont("data/LibreFranklin-Regular.ttf", font_size_max);
-  cp5font = new ControlFont(font, int(font_size_max));
+  font = createFont("data/LibreFranklin-Regular.ttf", font_size);
+  cp5font = new ControlFont(font, int(font_size));
   textFont(font);
   
   // interface
@@ -209,10 +208,12 @@ void draw() {
   }
 }
 
+// new search
 void enter() {
   generate();
 }
 
+// new search
 void input(String text) {
   search_query = text + " -is:retweet -'RT'";
   generate();

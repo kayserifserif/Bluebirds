@@ -79,7 +79,7 @@ class Analyser {
 
   void displayTopWords() {
     fill(c_system);
-    textSize(font_size_max);
+    textSize(font_size);
     text("TOP SECONDARY WORDS", x, y);
 
     // check mouse hover

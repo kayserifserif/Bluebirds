@@ -8,13 +8,13 @@ class TopWord {
     this.x = x;
     this.y = y;
     w = textWidth(word);
-    h = font_size_max;
+    h = font_size;
   }
 
   void display() {
     // if hovered, highlight
     if (mouseX > x && mouseX < x + w &&
-      mouseY > y - font_size_max && mouseY < y + h) {
+      mouseY > y - font_size && mouseY < y + h) {
       hovered_word = word;
       fill(c_top_word);
       // if hovered and pressed, highlight tweets containing this word

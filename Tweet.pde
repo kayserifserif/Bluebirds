@@ -58,10 +58,10 @@ class Tweet {
   float image_size = 30.0;
 
   // TEXT
-  float leading = font_size_max*1.2;
+  float leading = font_size*1.2;
   float para_width = 250.0;
   float para_height;
-  float font_size;
+  float tweet_size;
   float font_size_increment = 0.5;
   float scale_factor = 1.0;
   float scale_factor_increment = 0.05;
@@ -105,8 +105,8 @@ class Tweet {
 
   float calculateMaxHeight() {
     float max_height;
-    float max_leading = font_size_max * 1.2;
-    textSize(font_size_max);
+    float max_leading = font_size * 1.2;
+    textSize(font_size);
     // cursor
     float cursor_x = position.x;
     // line counter for calculating height
@@ -206,9 +206,9 @@ class Tweet {
       // set sizes
       w = para_width * scale_factor;
       h = para_height * scale_factor;
-      font_size = font_size_max * scale_factor;
-      leading = font_size * 1.2;
-      textSize(font_size);
+      tweet_size = font_size * scale_factor;
+      leading = tweet_size * 1.2;
+      textSize(tweet_size);
 
       // set coordinates
       min_x = position.x;
