@@ -4,6 +4,8 @@ A Twitter interface/visualisation based on Daniel Shiffman's flocking algorithm.
 
 *Originally a final project about climate change denial for USC IML-288: Critical Thinking and Procedural Media with [John B. Carpenter](http://johnbcarpenter.com/). Exercises and explorations [here](https://github.com/whykatherine/climate-change-denial.git) and class repository [here](https://github.com/johnbcarpenter/USC_IML288).*
 
+![Bluebirds interface showing clusters of Twitter birds flying around the screen, with the user currently expanding one of the Tweets to read](https://github.com/whykatherine/Bluebirds/blob/master/documentation/Screenshot%202019-01-07%20at%2011.11.47%20AM.png)
+
 ## Install
 1. Download [Processing](https://processing.org/download/).
 2. Download or clone this repository.
